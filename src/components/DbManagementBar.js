@@ -3,7 +3,12 @@ import { ReactDiagram } from 'gojs-react';
 import { useState } from 'react';
 import { datatypes} from './../helpers/datatypes';
 
-export function DbManagementBar({currentModel, addTable}) {
+//import Modal, { ModalHeader, ModalBody, ModalFooter } from './Modal';
+import './../css/dbManagementBar.scss';
+
+import { Button, Modal, ModalBody, ModalHeader, ModalFooter, Input, ButtonGroup } from 'reactstrap';
+
+export function DbManagementBar({currentModel, addTable, selectRelationship}) {
   const [displayForm, setDisplayForm] = useState(false);
   let [fieldsLength, setFieldsLength] = useState(1);
   const [tableInfo, setTableInfo] = useState({
@@ -20,6 +25,13 @@ export function DbManagementBar({currentModel, addTable}) {
     e.preventDefault();
     setFieldsLength(++fieldsLength);
   };
+
+  const removeField = (i) => {
+    console.log(i)
+    tableInfo.fields.splice(i, 1);
+    setTableInfo(tableInfo);
+    setFieldsLength(--fieldsLength);
+  }
 
   const changeField = (fields, id, changes) => {
     const existingField = tableInfo.fields.find(f => f.id === id);
@@ -38,63 +50,127 @@ export function DbManagementBar({currentModel, addTable}) {
         id, 
         name: changes.name, 
         type: changes.type ?? datatypes[0], 
-        unique: false, 
-        not_null: false, 
-        pk: false
+        unique: changes.unique ?? false, 
+        not_null: changes.not_null ?? false, 
+        pk: changes.pk ?? false
       },
     ];
   }
 
   return (
     <div>
-      { currentModel !== 'main' ? <button onClick={showForm}>Add table</button> : null }
-      { displayForm ? 
-        <form>
-          <label>
-            Db name:
-            <input value={tableInfo.name} type="text" name="table_name" onInput={e => setTableInfo({...tableInfo, name: e.target.value})} />
-          </label>
-          { 
-            new Array(fieldsLength).fill(0).map((el, i) => <div key={`field_${i}`} >
-              <label>
-                Field {i}:
-                <input value={tableInfo[`field_${i}`]?.name} type="text" name={`field_${i}`} onInput={e => setTableInfo(
-                  {...tableInfo, fields: changeField(tableInfo.fields, `field_${i}`, { name: e.target.value })}
-                )} />
-              </label>
-              <label>
-                Type {i}:
-                <select name="select" onChange={(e) => changeField(tableInfo.fields, `field_${i}`, { type: e.target.value })}>
-                  {datatypes.map(dt => <option value={dt} selected={tableInfo[`field_${i}`]?.type === dt}>{dt}</option>)}
-                </select>
-              </label>
-              <label>
-                Is unique {i}?:
-                <input name="unique" type="checkbox" checked={tableInfo[`field_${i}`]?.unique} onChange={
-                  (e) => changeField(tableInfo.fields, `field_${i}`, { uniqueClicked: true })
-                }></input>
-              </label>
-              <label>
-                NOT NULL {i}?:
-                <input name="not_null" type="checkbox" checked={tableInfo[`field_${i}`]?.not_null} onChange={
-                  (e) => changeField(tableInfo.fields, `field_${i}`, { notNullClicked: true })
-                }></input>
-              </label>
-              <label>
-                Primary key {i}?:
-                <input name="pk" type="checkbox" checked={tableInfo[`field_${i}`]?.pk} onChange={
-                  (e) => changeField(tableInfo.fields, `field_${i}`, { pkClicked: true })
-                }></input>
-              </label>
-            </div>)
-          }
-          <button onClick={addField}>Add field</button>
-          <button onClick={(e) => {
-            addTable(e, tableInfo);
-            setDisplayForm(false);
-          }}>Add</button>
-        </form> 
+      { currentModel !== 'main' ? 
+      <div>
+        <button onClick={showForm}>Add table</button> 
+        <ButtonGroup>
+          <Button
+            color="primary"
+            onClick={(e) => selectRelationship("one-to-many")}
+          >
+            One-to-Many
+          </Button>
+          <Button
+            color="primary"
+            onClick={(e) => selectRelationship("many-to-many")}
+          >
+            Many-to-Many
+          </Button>
+        </ButtonGroup>
+      </div>
       : null }
+      <Modal
+        isOpen={displayForm}
+        onClosed={() => setDisplayForm(false)}
+        toggle={() => setDisplayForm(false)}
+      >
+        <ModalHeader toggle={() => setDisplayForm(false)}>
+          Створити таблицю
+        </ModalHeader>
+        <ModalBody>
+          <form className="form">
+            <label className="stretch">
+              Назва таблиці:
+              <Input value={tableInfo.name} type="text" name="table_name" onInput={
+                e => setTableInfo({...tableInfo, name: e.target.value})
+              } placeholder="Введіть назву таблиці..." />
+            </label>
+            { 
+              new Array(fieldsLength).fill(0).map((el, i) => <div className="db-field" key={`field_${i}`} >
+                <div className="removeButton">
+                  <button type="button" className="btn-close" aria-label="Delete" onClick={(e) => removeField(i)}></button>
+                </div>
+                <div>
+                  <label className="form-check-label" htmlFor={`name_${i}`}>
+                    Назва поля:
+                  </label>
+                  <Input id={`name_${i}`} value={tableInfo[`field_${i}`]?.name} type="text" name={`field_${i}`} onInput={e => setTableInfo(
+                    {...tableInfo, fields: changeField(tableInfo.fields, `field_${i}`, { name: e.target.value })}
+                  )} placeholder="Введіть назву поля..." />
+                </div>
+                <div>
+                  <label className="form-check-label" htmlFor={`select_${i}`}>
+                    Тип:
+                  </label>
+                  <select name="select" id={`select_${i}`} className="form-select" onChange={(e) => changeField(tableInfo.fields, `field_${i}`, { type: e.target.value })} value={tableInfo[`field_${i}`]?.type}>
+                    {datatypes.map(dt => <option value={dt} key={dt}>{dt}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <input className="form-check-input" name="unique" type="checkbox" checked={tableInfo[`field_${i}`]?.unique} onChange={
+                    (e) => changeField(tableInfo.fields, `field_${i}`, { uniqueClicked: true })
+                  } id={`unique_${i}`}></input>
+                  <label className="form-check-label" htmlFor={`unique_${i}`}>
+                    UNIQUE
+                  </label>
+                </div>
+                <div>
+                  <input className="form-check-input" name="not_null" type="checkbox" checked={tableInfo[`field_${i}`]?.not_null} onChange={
+                    (e) => changeField(tableInfo.fields, `field_${i}`, { notNullClicked: true })
+                  } id={`not_null_${i}`}></input>
+                  <label className="form-check-label" htmlFor={`not_null_${i}`}>
+                    NOT NULL
+                  </label>
+                </div>
+                <div>
+                  <input className="form-check-input" name="pk" type="checkbox" checked={tableInfo[`field_${i}`]?.pk} onChange={
+                    (e) => changeField(tableInfo.fields, `field_${i}`, { pkClicked: true })
+                  } id={`pk_${i}`}></input>
+                  <label className="form-check-label" htmlFor={`pk_${i}`}>
+                    Primary key (PK):
+                  </label>
+                </div>
+              </div>)
+            }
+            <Button
+              color="primary"
+              onClick={(e) => {
+                addField(e);
+              }}
+              outline
+              size="sm"
+            >
+              Додати поле
+            </Button>
+            
+          </form>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            color="primary"
+            onClick={(e) => {
+              e.preventDefault();
+              addTable(e, tableInfo);
+              setDisplayForm(false);
+              setTableInfo({
+                name: '',
+                fields: [],
+              });
+            }}
+          >
+            Додати
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }

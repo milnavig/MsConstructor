@@ -56,15 +56,15 @@ let linkdata = {
     { from: 'func1', to: 'func3', relationship: 'rpc', portId: "In" },
   ],
   db1: [
-    { from: "Record1", fromPort: "field1", to: "Record2", toPort: "fieldA" },
-    { from: "Record1", fromPort: "field2", to: "Record2", toPort: "fieldD" },
-    { from: "Record1", fromPort: "fieldThree", to: "Record2", toPort: "fieldB" }
+    { from: "Record1", fromPort: "field1", to: "Record2", toPort: "fieldA", relationship: "one-to-many" },
+    { from: "Record1", fromPort: "field2", to: "Record2", toPort: "fieldD", relationship: "many-to-many" },
+    { from: "Record1", fromPort: "fieldThree", to: "Record2", toPort: "fieldB", relationship: "one-to-many" }
   ],
 };
 
 const diagrams = new Map([['main', myDiagram]]);
 
-function createModel(nodes, links, modelName) {
+function createModel(nodes, links, modelName, dbRelationship) {
   const $ = go.GraphObject.make;
 
   const myDiagram =
@@ -84,8 +84,8 @@ function createModel(nodes, links, modelName) {
         // allow drawing links from or to this port:
         //fromLinkable: true, toLinkable: true
       },
-      new go.Binding("fromLinkable", "type", (type) => (type === 'pk' || type === 'fk') ? true : false),
-      new go.Binding("toLinkable", "type", (type) => (type === 'pk' || type === 'fk') ? true : false),
+      new go.Binding("fromLinkable", "type", (type) => (type === 'pk' || type === 'fk') ? true : true),
+      new go.Binding("toLinkable", "type", (type) => (type === 'pk' || type === 'fk') ? true : true),
       $(go.Shape,
         {
           column: 0,
@@ -190,16 +190,42 @@ function createModel(nodes, links, modelName) {
       ) 
     ); 
 
+  const selectArrow = (r) => {
+    switch (r) {
+      case "one-to-many": return "DoubleLine";
+      case "many-to-many": return "BackwardLineFork";
+      default: return "DoubleLine";
+    }
+  }
+
   myDiagram.linkTemplate =
     $(go.Link,
       { relinkableFrom: true, relinkableTo: true, toShortLength: 4 },  // let user reconnect links
       $(go.Shape, { strokeWidth: 1.5 }),
       $(go.Shape, { toArrow: "LineFork", scale: 1.5 }),
-      $(go.Shape, { fromArrow: "DoubleLine", scale: 1.5 })
+      $(go.Shape, { scale: 1.5 }, new go.Binding("fromArrow", "relationship", selectArrow))
     );
 
+  const checkField = (linkData) => {
+    //nodes[modelName].find((node) => node.key === linkData.from && node.fields)
+
+    // all model changes should happen in a transaction
+    myDiagram.commit(function(d) {
+      const node = myDiagram.model.nodeDataArray.find((node) => node.key === linkData.from);
+      const field = node.fields.find((field) => field.name === linkData.fromPort);
+      if (field.type === "fk") return;
+      field.type = "fk";
+
+      myDiagram.findNodeForKey(node.key)?.updateTargetBindings();
+    }, "make field foreign key");
+  }
+
   myDiagram.addDiagramListener("LinkDrawn", function(e) {
-    //
+    let link = e.subject;
+    link.data.relationship = dbRelationship.current;
+    e.diagram.model.setCategoryForLinkData(link.data, link.data.relationship);
+    console.log(link.data);
+    checkField(link.data);
   });
 
   myDiagram.model =
@@ -237,6 +263,7 @@ export function MicroservicesDiagramV3() {
   const forceUpdate = useCallback(() => updateState({}), []);
 
   const arrowType = useRef('event');
+  const dbRelationship = useRef('one-to-many');
 
   function addMethod(e) {
     e.preventDefault();
@@ -268,7 +295,7 @@ export function MicroservicesDiagramV3() {
     if (!model) {
       setNodes({...nodes, [obj.part.data.key]: []});
       setLinks({...links, [obj.part.data.key]: []});
-      model = createModel(nodes, links, obj.part.data.key);
+      model = createModel(nodes, links, obj.part.data.key, dbRelationship);
       diagrams.set(obj.part.data.key, model);
     }
     setCurrentModel(obj.part.data.key);
@@ -553,7 +580,7 @@ export function MicroservicesDiagramV3() {
           <button onClick={addMethod}>Надіслати</button>
         </form> 
       : null }
-      <DbManagementBar currentModel={currentModel} addTable={addTable}></DbManagementBar>
+      <DbManagementBar currentModel={currentModel} addTable={addTable} selectRelationship={(type) => dbRelationship.current = type}></DbManagementBar>
       { currentModel === 'main' ? 
         <ReactDiagram
           initDiagram={() => init(currentModel)}
