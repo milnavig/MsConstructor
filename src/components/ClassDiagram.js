@@ -1,7 +1,5 @@
 import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import { useState } from 'react';
-
 
 function init() {
   const $ = go.GraphObject.make;

@@ -2,19 +2,25 @@ import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
 import { useState } from 'react';
 import { datatypes} from './../helpers/datatypes';
+import Box from '@mui/material/Box';
 
 //import Modal, { ModalHeader, ModalBody, ModalFooter } from './Modal';
 import './../css/dbManagementBar.scss';
 
-import { Button, Modal, ModalBody, ModalHeader, ModalFooter, Input, ButtonGroup } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader, ModalFooter, Input } from 'reactstrap';
+import MuiButton from '@mui/material/Button';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import TableChartIcon from '@mui/icons-material/TableChart';
+import ButtonGroup from '@mui/material/ButtonGroup';
 
-export function DbManagementBar({currentModel, addTable, selectRelationship}) {
+export function DbManagementBar({currentModel, addTable, selectRelationship, onClick}) {
   const [displayForm, setDisplayForm] = useState(false);
-  let [fieldsLength, setFieldsLength] = useState(1);
+  const [fieldsLength, setFieldsLength] = useState(1);
   const [tableInfo, setTableInfo] = useState({
     name: '',
     fields: [],
   });
+  const [toggle, setToggle] = useState(true);
 
   const showForm = (e) => {
     e.preventDefault();
@@ -60,23 +66,43 @@ export function DbManagementBar({currentModel, addTable, selectRelationship}) {
   return (
     <div>
       { currentModel !== 'main' ? 
-      <div>
-        <button onClick={showForm}>Add table</button> 
-        <ButtonGroup>
-          <Button
+      <Box
+        sx={{
+          display: 'flex',
+        }}
+      >
+        <MuiButton variant="outlined" sx={{margin: 1}} onClick={onClick} startIcon={<ArrowBackIcon />}>
+          Назад
+        </MuiButton>
+        <MuiButton variant="outlined" sx={{margin: 1}} onClick={showForm} startIcon={<TableChartIcon />}>
+          Додати таблицю
+        </MuiButton>
+        <div className="connection">
+          Тип зв'язка
+        </div>
+        <ButtonGroup variant="outlined" sx={{margin: 1}} aria-label="outlined button group">
+          <MuiButton
+            variant={toggle ? "contained" : "outlined"}
             color="primary"
-            onClick={(e) => selectRelationship("one-to-many")}
+            onClick={(e) => {
+              setToggle(!toggle);
+              selectRelationship("one-to-many");
+            }}
           >
             One-to-Many
-          </Button>
-          <Button
+          </MuiButton>
+          <MuiButton
+            variant={!toggle ? "contained" : "outlined"}
             color="primary"
-            onClick={(e) => selectRelationship("many-to-many")}
+            onClick={(e) => {
+              setToggle(!toggle);
+              selectRelationship("many-to-many");
+            }}
           >
             Many-to-Many
-          </Button>
+          </MuiButton>
         </ButtonGroup>
-      </div>
+      </Box>
       : null }
       <Modal
         isOpen={displayForm}
@@ -95,7 +121,7 @@ export function DbManagementBar({currentModel, addTable, selectRelationship}) {
               } placeholder="Введіть назву таблиці..." />
             </label>
             { 
-              new Array(fieldsLength).fill(0).map((el, i) => <div className="db-field" key={`field_${i}`} >
+              new Array(fieldsLength).fill(0).map((el, i) => <div className="item" key={`field_${i}`} >
                 <div className="removeButton">
                   <button type="button" className="btn-close" aria-label="Delete" onClick={(e) => removeField(i)}></button>
                 </div>
@@ -151,7 +177,6 @@ export function DbManagementBar({currentModel, addTable, selectRelationship}) {
             >
               Додати поле
             </Button>
-            
           </form>
         </ModalBody>
         <ModalFooter>

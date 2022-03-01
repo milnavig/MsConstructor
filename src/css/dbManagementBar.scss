@@ -3,18 +3,13 @@
   margin-top: 0px;
 }
 
-.db-field {
-  
+.item {
   margin: 5px 0 5px 0;
 }
 
-.db-field div {
+.item div {
   padding: 3px;
 
-}
-
-.table-name {
-  display: block;
 }
 
 .stretch {
@@ -25,4 +20,11 @@
   width: 100%;
   display: flex;
   justify-content: flex-end;
+}
+
+.metadata {
+  margin: 10px 0 10px 0;
+  & div {
+    padding: 0 6px 0 0;
+  }
 }
