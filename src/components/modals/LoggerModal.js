@@ -176,87 +176,92 @@ export function LoggerModal({isOpen, toggle, moleculerOptions, setMoleculerOptio
             </Tooltip>
           </div>
         </div>
-        <div>
-          <FormControl sx={{ m: 1, width: 300 }}>
-            <InputLabel id="label-4">colors</InputLabel>
-            <Select
-              labelId="label-4"
-              id="select-4"
-              value={loggerData.color}
-              onChange={handleColorChange}
-              input={<OutlinedInput label="colors" />}
-              MenuProps={MenuProps}
-            >
-              {["false", "true"].map((color) => (
-                <MenuItem
-                  key={color}
-                  value={color}
-                >
-                  {color}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <div className="vertical-align">
-            <Tooltip title="Використовувати кольори при виводі логів">
-                <HelpIcon></HelpIcon>
-            </Tooltip>
+        {loggerData.logger === LOGGER ? 
+          <>
+          <div>
+            <FormControl sx={{ m: 1, width: 300 }}>
+              <InputLabel id="label-4">colors</InputLabel>
+              <Select
+                labelId="label-4"
+                id="select-4"
+                value={loggerData.color}
+                onChange={handleColorChange}
+                input={<OutlinedInput label="colors" />}
+                MenuProps={MenuProps}
+              >
+                {["false", "true"].map((color) => (
+                  <MenuItem
+                    key={color}
+                    value={color}
+                  >
+                    {color}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <div className="vertical-align">
+              <Tooltip title="Використовувати кольори при виводі логів">
+                  <HelpIcon></HelpIcon>
+              </Tooltip>
+            </div>
           </div>
-        </div>
-        <div>
-          <FormControl sx={{ m: 1, width: 300 }}>
-            <InputLabel id="label-6">moduleColors</InputLabel>
-            <Select
-              labelId="label-6"
-              id="select-6"
-              value={loggerData.moduleColor}
-              onChange={handleModuleColorChange}
-              input={<OutlinedInput label="moduleColors" />}
-              MenuProps={MenuProps}
-            >
-              {["false", "true"].map((moduleColor) => (
-                <MenuItem
-                  key={moduleColor}
-                  value={moduleColor}
-                >
-                  {moduleColor}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <div className="vertical-align">
-            <Tooltip title="Друкувати назви модулів різними кольорами">
-                <HelpIcon></HelpIcon>
-            </Tooltip>
+          <div>
+            <FormControl sx={{ m: 1, width: 300 }}>
+              <InputLabel id="label-6">moduleColors</InputLabel>
+              <Select
+                labelId="label-6"
+                id="select-6"
+                value={loggerData.moduleColor}
+                onChange={handleModuleColorChange}
+                input={<OutlinedInput label="moduleColors" />}
+                MenuProps={MenuProps}
+              >
+                {["false", "true"].map((moduleColor) => (
+                  <MenuItem
+                    key={moduleColor}
+                    value={moduleColor}
+                  >
+                    {moduleColor}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <div className="vertical-align">
+              <Tooltip title="Друкувати назви модулів різними кольорами">
+                  <HelpIcon></HelpIcon>
+              </Tooltip>
+            </div>
           </div>
-        </div>
-        <div>
-          <FormControl sx={{ m: 1, width: 300 }}>
-            <InputLabel id="label-7">formatters</InputLabel>
-            <Select
-              labelId="label-7"
-              id="select-7"
-              value={loggerData.formatter}
-              onChange={handleFormatterChange}
-              input={<OutlinedInput label="formatters" />}
-              MenuProps={MenuProps}
-            >
-              {formatters.map((formatter) => (
-                <MenuItem
-                  key={formatter}
-                  value={formatter}
-                >
-                  {formatter}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <div className="vertical-align">
-            <Tooltip title="Форматування рядків">
-                <HelpIcon></HelpIcon>
-            </Tooltip>
+          <div>
+            <FormControl sx={{ m: 1, width: 300 }}>
+              <InputLabel id="label-7">formatters</InputLabel>
+              <Select
+                labelId="label-7"
+                id="select-7"
+                value={loggerData.formatter}
+                onChange={handleFormatterChange}
+                input={<OutlinedInput label="formatters" />}
+                MenuProps={MenuProps}
+              >
+                {formatters.map((formatter) => (
+                  <MenuItem
+                    key={formatter}
+                    value={formatter}
+                  >
+                    {formatter}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <div className="vertical-align">
+              <Tooltip title="Форматування рядків">
+                  <HelpIcon></HelpIcon>
+              </Tooltip>
+            </div>
           </div>
-        </div>
+          </>
+          : null
+        }
       </ModalBody>
       <ModalFooter>
         <Button
@@ -266,7 +271,11 @@ export function LoggerModal({isOpen, toggle, moleculerOptions, setMoleculerOptio
             setMoleculerOptions({
               ...moleculerOptions, 
               logger: {
+                logger: loggerData.logger,
+                logLevel: loggerData.logLevel,
                 color: loggerData.color,
+                moduleColor: loggerData.moduleColor,
+                formatter: loggerData.formatter,
               }
             });
             toggle(false);

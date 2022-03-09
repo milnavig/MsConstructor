@@ -52,6 +52,7 @@ export function LoadBalancerModal({isOpen, toggle, moleculerOptions, setMolecule
 
   useEffect(() => {
     moleculerOptions.loadBalancer = {
+      strategy: STRATEGY_NAME,
       sampleCount: SAMPLE_COUNT,
       lowCpuUsage: LOW_CPU_USAGE,
       lowLatency: LOW_LATENCY,
@@ -176,6 +177,7 @@ export function LoadBalancerModal({isOpen, toggle, moleculerOptions, setMolecule
               setMoleculerOptions({
                 ...moleculerOptions, 
                 loadBalancer: {
+                  strategy: strategyName,
                   sampleCount: options.sampleCount,
                   lowCpuUsage: options.lowCpuUsage,
                   lowLatency: options.lowLatency,

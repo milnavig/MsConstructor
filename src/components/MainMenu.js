@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import DownloadIcon from '@mui/icons-material/Download';
+import UploadIcon from '@mui/icons-material/Upload';
 import Box from '@mui/material/Box';
 import MuiButton from '@mui/material/Button';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -8,6 +9,7 @@ import SmsIcon from '@mui/icons-material/Sms';
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 import BalanceIcon from '@mui/icons-material/Balance';
 import TimelineIcon from '@mui/icons-material/Timeline';
+import SettingsIcon from '@mui/icons-material/Settings';
 import { ServiceDiscoveryModal } from './modals/ServiceDiscoveryModal';
 import { LoadBalancerModal } from './modals/LoadBalancerModal';
 import { BrokerModal } from './modals/BrokerModal';
@@ -21,6 +23,20 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
   const [displayBalancerForm, setDisplayBalancerForm] = useState(false);
   const [displayTracingForm, setDisplayTracingForm] = useState(false);
   //const [moleculerOptions, setMoleculerOptions] = useState({});
+
+  function openSchemeHandler() {
+    const upload = document.getElementById("fileupload");
+    upload.click();
+    upload.onchange = function(e) { 
+      let file = upload.files[0];
+      let read = new FileReader();
+
+      read.readAsBinaryString(file);
+      read.onloadend = function() {
+        console.log(read.result);
+      }
+    }
+  }
 
   return (
     <div>
@@ -60,11 +76,18 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
           flexWrap: "wrap",
         }}
       >
+        <input id="fileupload" type="file" style={{display: "none"}} name="fileupload" /> 
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} color="success" startIcon={<PlayArrowIcon />}>
           Згенерувати програму
         </MuiButton>
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={saveSchemeHandler} startIcon={<DownloadIcon />}>
           Завантажити схему
+        </MuiButton>
+        <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={openSchemeHandler} startIcon={<UploadIcon />}>
+          Відкрити схему
+        </MuiButton>
+        <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} startIcon={<SettingsIcon />}>
+          Загальні налаштування
         </MuiButton>
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={() => setDisplayBrokerForm(true)} startIcon={<ManageAccountsIcon />}>
           Налаштування брокеру

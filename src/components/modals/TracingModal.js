@@ -81,6 +81,7 @@ export function TracingModal({isOpen, toggle, moleculerOptions, setMoleculerOpti
             setMoleculerOptions({
               ...moleculerOptions, 
               tracing: {
+                enable: tracingData.enable,
                 exporter: tracingData.exporter,
               }
             });

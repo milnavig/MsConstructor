@@ -3,6 +3,7 @@ import { ReactDiagram } from 'gojs-react';
 import { useState } from 'react';
 import { MetadataModal } from './modals/MetadataModal';
 import { MsManagementBar } from './MsManagementBar';
+import { GatewayModal } from './modals/GatewayModal';
 
 export function MicroservicesDiagram({
   diagram, 
@@ -20,6 +21,7 @@ export function MicroservicesDiagram({
   setMetadata,
 }) {
   //const [displayForm, setDisplayForm] = useState(false);
+  const [gatewayToggle, setGatewayToggle] = useState(false);
 
   function addMethod(event, data) {
     event.preventDefault();
@@ -37,8 +39,30 @@ export function MicroservicesDiagram({
   }
 
   function addMicroservice(e) {
-    setNodes({...nodes, [currentModel]: [...nodes[currentModel], { key: 'microservice-45', isGroup: true }]});
-    diagram.current.model.addNodeData({ key: 'microservice-45', isGroup: true });
+    setNodes({...nodes, [currentModel]: [...nodes[currentModel], { key: 'microservice-45', type: "microservice", isGroup: true }]});
+    diagram.current.model.addNodeData({ key: 'microservice-45', type: "microservice", isGroup: true });
+  }
+
+  function handleAddGateway(endpoints) {
+    const endpoints_arr = endpoints.map((ep, i) => ({key: `endpoint_${i}`, http_method: ep.method ?? "GET", url: '/' + ep.url, group: "gateway", type: "endpoint", category: "api"}));
+    if (!diagram.current.findNodeForKey("gateway")) {
+      setNodes({...nodes, [currentModel]: [...nodes[currentModel], {
+        key: "gateway", name: "gateway", type: "gateway", category: "gateway", isGroup: true
+      }, ...endpoints_arr]});
+      diagram.current.model.addNodeData({key: "gateway", name: "gateway", type: "gateway", category: "gateway", isGroup: true});
+    }
+    endpoints_arr.forEach(ep => {
+      let node = diagram.current.findNodeForKey(ep.key);
+      if (node !== null) {
+        diagram.current.startTransaction("");
+        node.data = {...node.data, url: ep.url, http_method: ep.http_method};
+        //node.data.http_method = ep.http_method;
+        //node.data.url = ep.url;
+        diagram.current.commitTransaction("");
+      } else {
+        diagram.current.model.addNodeData(ep);
+      }
+    });
   }
 
   function clear() {
@@ -48,6 +72,11 @@ export function MicroservicesDiagram({
   }
 
   return (<div>
+    <GatewayModal 
+      isOpen={gatewayToggle} 
+      toggle={() => setGatewayToggle(false)}
+      handleAddGateway={handleAddGateway}
+    ></GatewayModal>
     <MsManagementBar 
       addMethod={addMethod} 
       addMicroservice={addMicroservice}
@@ -55,6 +84,7 @@ export function MicroservicesDiagram({
       microserviceName={microserviceName.current}
       displayForm={displayForm} 
       setDisplayForm={setDisplayForm}
+      setGatewayFrom={() => setGatewayToggle(true)}
       clear={clear}
     ></MsManagementBar>
     <MetadataModal

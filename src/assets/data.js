@@ -1,8 +1,8 @@
 export let nodedata = {
   main: [
-    { key: 'microservice-1', isGroup: true },
-    { key: 'microservice-2', isGroup: true },
-    { key: 'microservice-3', isGroup: true },
+    { key: 'microservice-1', type: "microservice", isGroup: true },
+    { key: 'microservice-2', type: "microservice", isGroup: true },
+    { key: 'microservice-3', type: "microservice", isGroup: true },
     { key: 'func1', group: 'microservice-1', type: "method", parameters: [{ name: "amount", type: "Currency" }] },
     { key: 'func2', group: 'microservice-1', type: "method", parameters: [{ name: "amount", type: "Currency" }] },
     { key: 'func3', group: 'microservice-2', type: "method", parameters: [{ name: "amount", type: "Currency" }] },

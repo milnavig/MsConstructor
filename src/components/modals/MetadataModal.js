@@ -9,7 +9,6 @@ import Select from '@mui/material/Select';
 import TextField from '@mui/material/TextField';
 
 export function MetadataModal({isOpen, toggle, diagram, microserviceName, metadata, setMetadata}) {
-  //const [metadata, setMetadata] = useState({});
   let [metaLength, setMetaLength] = useState(1);
 
   const addMetadata = (e) => {

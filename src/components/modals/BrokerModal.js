@@ -11,10 +11,12 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import SmsIcon from '@mui/icons-material/Sms';
 import SavedSearchIcon from '@mui/icons-material/SavedSearch';
+import HelpIcon from '@mui/icons-material/Help';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Checkbox from '@mui/material/Checkbox';
+import Tooltip from '@mui/material/Tooltip';
 
 const TRANSPORTER_NAME = "TCP";
 const SERIALIZER_NAME = "JSON";
@@ -22,6 +24,14 @@ const THRESHOLD = 0.5;
 const MIN_REQUEST_COUNT = 20;
 const WINDOW_TIME = 60;
 const HALF_OPEN_TIME = 10_000;
+
+const RETRIES = 5;
+const DELAY = 100;
+const MAX_DELAY = 2000;
+const FACTOR = 2;
+
+const CONCURRENCY = 3;
+const MAX_QUEUE = 10;
 
 export function BrokerModal({isOpen, toggle, moleculerOptions, setMoleculerOptions}) {
   const [transporterName, setTransporterName] = useState(TRANSPORTER_NAME);
@@ -32,6 +42,20 @@ export function BrokerModal({isOpen, toggle, moleculerOptions, setMoleculerOptio
     minRequestCount: MIN_REQUEST_COUNT,
     windowTime: WINDOW_TIME,
     halfOpenTime: HALF_OPEN_TIME,
+  });
+
+  const [retryPolicyData, setRetryPolicyData] = useState({
+    enabled: false,
+    retries: RETRIES,
+    delay: DELAY,
+    maxDelay: MAX_DELAY,
+    factor: FACTOR,
+  });
+
+  const [bulkheadData, setBulkheadData] = useState({
+    enabled: false,
+    concurrency: CONCURRENCY,
+    maxQueueSize: MAX_QUEUE,
   });
 
   const transporters = [
@@ -84,11 +108,25 @@ export function BrokerModal({isOpen, toggle, moleculerOptions, setMoleculerOptio
     moleculerOptions.broker = {
       transporter: TRANSPORTER_NAME,
       serializer: SERIALIZER_NAME,
-      enabled: false,
-      threshold: THRESHOLD,
-      minRequestCount: MIN_REQUEST_COUNT,
-      windowTime: WINDOW_TIME,
-      halfOpenTime: HALF_OPEN_TIME,
+      circuitBraker: {
+        enabled: false,
+        threshold: THRESHOLD,
+        minRequestCount: MIN_REQUEST_COUNT,
+        windowTime: WINDOW_TIME,
+        halfOpenTime: HALF_OPEN_TIME,
+      },
+      retry: {
+        enabled: false,
+        retries: RETRIES,
+        delay: DELAY,
+        maxDelay: MAX_DELAY,
+        factor: FACTOR,
+      },
+      bulkhead: {
+        enabled: false,
+        concurrency: CONCURRENCY,
+        maxQueueSize: MAX_QUEUE,
+      },
     };
     setMoleculerOptions(() => moleculerOptions);
   }, []);
@@ -206,6 +244,147 @@ export function BrokerModal({isOpen, toggle, moleculerOptions, setMoleculerOptio
             
             : null
           }
+
+          <FormControl sx={{ m: 1, width: 300 }}>
+            <FormControlLabel
+              control={
+                <Checkbox checked={retryPolicyData.enabled} onChange={(e) => setRetryPolicyData({...retryPolicyData, enabled: !retryPolicyData.enabled})} name="retry" />
+              }
+              label="Retry Policy"
+            />
+          </FormControl>
+          { retryPolicyData.enabled ? 
+            <div>
+              <div>
+                <FormControl sx={{ m: 1, width: 300 }}>
+                  <TextField
+                    label="retries"
+                    type="number"
+                    value={retryPolicyData.retries ?? 0}
+                    onChange={(e) => setRetryPolicyData({...retryPolicyData, retries: e.target.value >= 0 ? (e.target.value) : 0})}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </FormControl> 
+                <div className="vertical-align">
+                  <Tooltip title="Кількість повторних спроб">
+                      <HelpIcon></HelpIcon>
+                  </Tooltip>
+                </div>
+              </div>
+              <div>
+                <FormControl sx={{ m: 1, width: 300 }}>
+                  <TextField
+                    label="delay"
+                    type="number"
+                    value={retryPolicyData.delay ?? 0}
+                    onChange={(e) => setRetryPolicyData({...retryPolicyData, delay: e.target.value})}
+                    inputProps={{ min: "0", step: "1" }} 
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </FormControl> 
+                <div className="vertical-align">
+                  <Tooltip title="Перша затримка в мілісекундах">
+                      <HelpIcon></HelpIcon>
+                  </Tooltip>
+                </div>
+              </div>
+              <div>
+                <FormControl sx={{ m: 1, width: 300 }}>
+                  <TextField
+                    label="maxDelay"
+                    type="number"
+                    value={retryPolicyData.maxDelay ?? 0}
+                    onChange={(e) => setRetryPolicyData({...retryPolicyData, maxDelay: e.target.value})}
+                    inputProps={{ min: "0", step: "1" }} 
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </FormControl>
+                <div className="vertical-align">
+                  <Tooltip title="Максимальна затримка в мілісекундах">
+                      <HelpIcon></HelpIcon>
+                  </Tooltip>
+                </div>
+              </div>
+              <div>
+                <FormControl sx={{ m: 1, width: 300 }}>
+                  <TextField
+                    label="factor"
+                    type="number"
+                    value={retryPolicyData.factor ?? 0}
+                    onChange={(e) => setRetryPolicyData({...retryPolicyData, factor: e.target.value})}
+                    inputProps={{ min: "0", step: "1" }} 
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </FormControl>
+                <div className="vertical-align">
+                  <Tooltip title="Коефіцієнт затримки. 2 означає експоненціальну затримку">
+                    <HelpIcon></HelpIcon>
+                  </Tooltip>
+                </div>
+              </div>
+            </div>
+            
+            : null
+          }
+          <FormControl sx={{ m: 1, width: 300 }}>
+            <FormControlLabel
+              control={
+                <Checkbox checked={bulkheadData.enabled} onChange={(e) => setBulkheadData({...bulkheadData, enabled: !bulkheadData.enabled})} name="bulkhead" />
+              }
+              label="Bulkhead"
+            />
+          </FormControl>
+          { bulkheadData.enabled ? 
+            <div>
+              <div>
+                <FormControl sx={{ m: 1, width: 300 }}>
+                  <TextField
+                    label="concurrency"
+                    type="number"
+                    value={bulkheadData.concurrency ?? 0}
+                    onChange={(e) => setBulkheadData({...bulkheadData, concurrency: e.target.value >= 0 ? (e.target.value) : 0})}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </FormControl> 
+                <div className="vertical-align">
+                  <Tooltip title="Максимальна кількість паралельних виконань">
+                      <HelpIcon></HelpIcon>
+                  </Tooltip>
+                </div>
+              </div>
+              <div>
+                <FormControl sx={{ m: 1, width: 300 }}>
+                  <TextField
+                    label="maxQueueSize"
+                    type="number"
+                    value={bulkheadData.maxQueueSize ?? 0}
+                    onChange={(e) => setBulkheadData({...bulkheadData, maxQueueSize: e.target.value})}
+                    inputProps={{ min: "0", step: "1" }} 
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
+                </FormControl> 
+                <div className="vertical-align">
+                  <Tooltip title="Максимальний розмір черги">
+                      <HelpIcon></HelpIcon>
+                  </Tooltip>
+                </div>
+              </div>
+            </div>
+            
+            : null
+          }
         </ModalBody>
         <ModalFooter>
           <Button
@@ -217,10 +396,24 @@ export function BrokerModal({isOpen, toggle, moleculerOptions, setMoleculerOptio
                 broker: {
                   transporter: transporterName, 
                   serializer: serializerName, 
-                  threshold: circuitBrakerData.threshold,
-                  minRequestCount: circuitBrakerData.minRequestCount,
-                  windowTime: circuitBrakerData.windowTime,
-                  halfOpenTime: circuitBrakerData.halfOpenTime,
+                  circuitBraker: {
+                    threshold: circuitBrakerData.threshold,
+                    minRequestCount: circuitBrakerData.minRequestCount,
+                    windowTime: circuitBrakerData.windowTime,
+                    halfOpenTime: circuitBrakerData.halfOpenTime,
+                  },
+                  retry: {
+                    enabled: retryPolicyData.enabled,
+                    retries: retryPolicyData.retries,
+                    delay: retryPolicyData.delay,
+                    maxDelay: retryPolicyData.maxDelay,
+                    factor: retryPolicyData.factor,
+                  },
+                  bulkhead: {
+                    enabled: bulkheadData.enabled,
+                    concurrency: bulkheadData.concurrency,
+                    maxQueueSize: bulkheadData.maxQueueSize,
+                  },
                 },
               });
               toggle(false);

@@ -75,6 +75,37 @@ export const microservicesModel = (go, {
       ),
     );
 
+  const apitemplate =
+    $(go.Node, "Auto",
+      { 
+        fromSpot: go.Spot.RightSide,
+      },
+      new go.Binding("minLocation", "type", (t) => t === "endpoint" ? new go.Point(NaN, NaN) : null),
+      new go.Binding("maxLocation", "type", (t) => t === "endpoint" ? new go.Point(NaN, NaN) : null),
+      $(go.Shape, "Rectangle",
+        { fill: "#EEEEEE", stroke: null, strokeWidth: 0, width: 250 },
+      ),
+      $(go.Panel, "Horizontal",
+        { alignment: go.Spot.Left },
+      ),
+      $(go.Panel, "Horizontal",
+        { alignment: go.Spot.Right },
+        $(go.Shape,  // the "Out" port
+          { width: 4, height: 4, portId: "Out", fromSpot: go.Spot.RightSide,
+            fromLinkable: true })),
+      $(go.Panel, "Horizontal",
+        { margin: 10 },
+        $(go.TextBlock,
+          { isMultiline: false, editable: true },
+          new go.Binding("text", "http_method").makeTwoWay(),
+        ),
+        $(go.TextBlock, " "),
+        $(go.TextBlock,
+          { isMultiline: false, editable: true },
+          new go.Binding("text", "url").makeTwoWay())
+      ),
+    );
+
   const dbtemplate =
     $(go.Node, "Auto",
       { toSpot: go.Spot.TopSide,
@@ -103,12 +134,6 @@ export const microservicesModel = (go, {
       )
     );
 
-  const templmap = new go.Map();
-  templmap.add("db", dbtemplate);
-  templmap.add("", diagram.nodeTemplate);
-
-  diagram.nodeTemplateMap = templmap;
-
   function makeLayout() {  // a Binding conversion function
     return new go.GridLayout(
       {
@@ -129,15 +154,27 @@ export const microservicesModel = (go, {
     switch (r) {
       case "event": return [5, 10];
       case "db": return [5, 2];
+      case "api": return [5, 0];
       case "rpc": return null;
       default: return null;
+    }
+  }
+
+  function convertToWidth(r) {
+    switch (r) {
+      case "event": return 2;
+      case "db": return 2;
+      case "api": return 3;
+      case "rpc": return 2;
+      default: return 2;
     }
   }
   
   diagram.linkTemplate =
     $(go.Link,
       { routing: go.Link.Orthogonal, corner: 5, reshapable: true },
-      $(go.Shape, { strokeWidth: 2, /*strokeDashArray: [5, 10]*/ },
+      $(go.Shape, // { strokeWidth: 2 },
+        new go.Binding("strokeWidth", "relationship", convertToWidth), 
         new go.Binding("strokeDashArray", "relationship", convertToLink)), 
       //$(go.Shape, { scale: 1.3, fill: "white" },
       //  new go.Binding("fromArrow", "relationship", convertFromArrow)),
@@ -188,8 +225,6 @@ export const microservicesModel = (go, {
   diagram.groupTemplate =
     $(go.Group, "Auto",
       { // define the group's internal layout
-        //layout: $(go.TreeLayout,
-        //  { angle: 90, arrangement: go.TreeLayout.ArrangementHorizontal, isRealtime: false }),
         contextMenu:     // define a context menu for each node
           $("ContextMenu",  // that has one button
             $("ContextMenuButton",
@@ -257,6 +292,61 @@ export const microservicesModel = (go, {
       )  // end Vertical Panel
     );  // end Group
   
+  const gtwtemplate = $(go.Group, "Auto",
+    { // define the group's internal layout
+      contextMenu:     // define a context menu for each node
+        $("ContextMenu",  // that has one button
+          $("ContextMenuButton",
+            {
+              "ButtonBorder.fill": "white",
+              "_buttonFillOver": "skyblue"
+            },
+            $(go.TextBlock, {font: "16px sans-serif"}, "Додати метод"),
+            { click: handleAddMethod }),
+        ),  // end Adornment
+      // the group begins unexpanded;
+      // upon expansion, a Diagram Listener will generate contents for the group
+      isSubGraphExpanded: false,
+      // when a group is expanded, if it contains no parts, generate a subGraph inside of it
+      subGraphExpandedChanged: group => {
+        if (group.memberParts.count === 0) {
+          //randomGroup(group.data.key);
+        }
+      },
+      layout: makeLayout(),
+    },
+    new go.Binding("location", "loc", go.Point.parse).makeTwoWay(go.Point.stringify),
+    $(go.Shape, "Rectangle",
+      { fill: "#fff", stroke: "gray", strokeWidth: 2 }),
+    $(go.Panel, "Vertical",
+      { defaultAlignment: go.Spot.Left, margin: 10, /*padding: 200*/ },
+      $(go.Panel, "Horizontal",
+        { defaultAlignment: go.Spot.Top },
+        // the SubGraphExpanderButton is a panel that functions as a button to expand or collapse the subGraph
+        $("SubGraphExpanderButton", { margin: 6 }),
+        $(go.TextBlock,
+          { font: "Bold 18px Sans-Serif", margin: 6 },
+          new go.Binding("text", "key"))
+      ),
+      // create a placeholder to represent the area where the contents of the group are
+      $(go.Placeholder,
+        { padding: new go.Margin(0, 15) })
+    )  // end Vertical Panel
+  );  // end Group
+  
+  const nodetemplmap = new go.Map();
+  nodetemplmap.add("db", dbtemplate);
+  nodetemplmap.add("api", apitemplate);
+  nodetemplmap.add("", diagram.nodeTemplate);
+
+  diagram.nodeTemplateMap = nodetemplmap;
+
+  const grouptemplmap = new go.Map();
+  grouptemplmap.add("gateway", gtwtemplate);
+  grouptemplmap.add("", diagram.groupTemplate);
+
+  diagram.groupTemplateMap = grouptemplmap;
+  
   diagram.model = new go.GraphLinksModel({
     copiesArrays: true,
     copiesArrayObjects: true,
@@ -272,6 +362,15 @@ export const microservicesModel = (go, {
   diagram.addDiagramListener("LinkDrawn", function(e) {
     let link = e.subject;
     link.data.relationship = arrowType.current;
+    if (link.data.from.startsWith("endpoint")) {
+      if (diagram.findNodeForKey(link.data.to)?.data.type === "microservice") {
+        e.diagram.remove(link);
+      }
+      link.data.relationship = "api";
+      e.diagram.model.setCategoryForLinkData(link.data, link.data.relationship);
+      return;
+    }
+
     e.diagram.model.setCategoryForLinkData(link.data, link.data.relationship);
 
     const tool = diagram.toolManager.linkingTool;

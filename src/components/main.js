@@ -90,7 +90,7 @@ export function MainComponent() {
     const scheme = {};
     diagrams.forEach((d, key) => {
       //scheme[key] = d.model.modelData;
-      scheme[key] = JSON.stringify(d.model, null, 2); //d.model.toJson();
+      scheme[key] = d.model.toJson(); //JSON.stringify(d.model, null, 2);
     });
     scheme.options = moleculerOptions;
     console.log(scheme);
@@ -98,7 +98,7 @@ export function MainComponent() {
     download(JSON.stringify(scheme, null, 2));
   }
 
-  function download(data, filename = "scheme", type = "json") {
+  function download(data, filename = "scheme.json", type = "json") {
     let file = new Blob([data], {type: type});
     if (window.navigator.msSaveOrOpenBlob) // IE10+
       window.navigator.msSaveOrOpenBlob(file, filename);
