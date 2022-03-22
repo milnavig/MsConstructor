@@ -10,13 +10,14 @@ import SavedSearchIcon from '@mui/icons-material/SavedSearch';
 import BalanceIcon from '@mui/icons-material/Balance';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import SettingsIcon from '@mui/icons-material/Settings';
+import SchemaIcon from '@mui/icons-material/Schema';
 import { ServiceDiscoveryModal } from './modals/ServiceDiscoveryModal';
 import { LoadBalancerModal } from './modals/LoadBalancerModal';
 import { BrokerModal } from './modals/BrokerModal';
 import { LoggerModal } from './modals/LoggerModal';
 import { TracingModal } from './modals/TracingModal';
 
-export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions}) {
+export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions, setTestScheme}) {
   const [displayBrokerForm, setDisplayBrokerForm] = useState(false);
   const [displayLoggerForm, setDisplayLoggerForm] = useState(false);
   const [displayDiscoveryForm, setDisplayDiscoveryForm] = useState(false);
@@ -103,6 +104,9 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
         </MuiButton>
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={() => setDisplayTracingForm(true)} startIcon={<TimelineIcon />}>
           Відстеження
+        </MuiButton>
+        <MuiButton variant="contained" color="success" sx={{margin: 1, borderRadius: "0px"}} onClick={() => setTestScheme()} startIcon={<SchemaIcon />}>
+          Тестова схема
         </MuiButton>
       </Box>
     </div>

@@ -13,10 +13,10 @@ export function DbDiagram({globalDiagram, nodes, setNodes, init, currentModel, s
     const table = {
       key: data.name,
       widths: [NaN, NaN, 60],
-      fields: data.fields.map(d => ({ name: d.name, datatype: d.type, info: "first field", type: d.pk ? "pk" : "field" })),
+      fields: data.fields.map(d => ({ name: d.name, datatype: d.type, meta: "", type: d.pk ? "pk" : "field" })),
       loc: "0 0"
     };
-    console.log(currentModel)
+    
     setNodes({...nodes, [currentModel]: [...nodes[currentModel], table]});
     
     const d = globalDiagram.current;

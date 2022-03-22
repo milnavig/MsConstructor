@@ -1,0 +1,23 @@
+{ 
+  "class": "GraphLinksModel",
+  "copiesArrays": true,
+  "copiesArrayObjects": true,
+  "linkFromPortIdProperty": "fromPort",
+  "linkToPortIdProperty": "toPort",
+  "nodeDataArray": [
+    {"key":"microservice-1","type":"microservice","isGroup":true,"loc":"11 42.4923828125"},
+    {"key":"microservice-2","type":"microservice","isGroup":true,"loc":"220.60390218580795 42.4923828125"},
+    {"key":"microservice-3","type":"microservice","isGroup":true,"loc":"11 115.984765625"},
+    {"key":"func1","group":"microservice-1","type":"method","parameters":[{"name":"amount","type":"Currency"}]},
+    {"key":"func2","group":"microservice-1","type":"method","parameters":[{"name":"amount","type":"Currency"}]},
+    {"key":"func3","group":"microservice-2","type":"method","parameters":[{"name":"amount","type":"Currency"}]},
+    {"key":"func4","group":"microservice-3","type":"method","parameters":[{"name":"amount","type":"Currency"}]},
+    {"key":"db1","name":"db1","type":"db","category":"db"}
+  ],
+  "linkDataArray": [
+    {"from":"microservice-1","to":"microservice-2","relationship":"event"},
+    {"from":"func1","to":"func3","relationship":"rpc"},
+    {"from":"func2","to":"func4","relationship":"rpc"},
+    {"from":"microservice-1","to":"db1","relationship":"db"}
+  ]
+}

@@ -103,7 +103,7 @@ export function MsManagementBar({addMethod, addMicroservice, setGatewayFrom, mic
   const [toggle, setToggle] = useState(true);
 
   useEffect(() => {
-    setMethodInfo({...methodInfo, microservice: microserviceName})
+    setMethodInfo({...methodInfo, microservice: microserviceName});
   }, [microserviceName]);
 
   const addProps = (e) => {

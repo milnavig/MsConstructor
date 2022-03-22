@@ -1,9 +1,10 @@
 import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { MetadataModal } from './modals/MetadataModal';
 import { MsManagementBar } from './MsManagementBar';
 import { GatewayModal } from './modals/GatewayModal';
+import { EventModal } from './modals/EventModal';
 
 export function MicroservicesDiagram({
   diagram, 
@@ -19,8 +20,11 @@ export function MicroservicesDiagram({
   setMetadataToggle,
   metadata, 
   setMetadata,
+  eventToggle, 
+  setEventToggle,
+  currentLink, 
+  setCurrentLink,
 }) {
-  //const [displayForm, setDisplayForm] = useState(false);
   const [gatewayToggle, setGatewayToggle] = useState(false);
 
   function addMethod(event, data) {
@@ -77,6 +81,13 @@ export function MicroservicesDiagram({
       toggle={() => setGatewayToggle(false)}
       handleAddGateway={handleAddGateway}
     ></GatewayModal>
+    <EventModal
+      isOpen={eventToggle} 
+      toggle={() => setEventToggle(false)}
+      diagram={diagram}
+      currentLink={currentLink}
+      setCurrentLink={setCurrentLink}
+    ></EventModal>
     <MsManagementBar 
       addMethod={addMethod} 
       addMicroservice={addMicroservice}
@@ -98,7 +109,8 @@ export function MicroservicesDiagram({
     <ReactDiagram
       initDiagram={init}
       divClassName='diagram-component'
+      //skipsDiagramUpdate={false}
       //onModelChange={handleModelChange}
-    /> 
+    />
   </div>);
 }

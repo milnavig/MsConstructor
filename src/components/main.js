@@ -1,9 +1,6 @@
 import * as go from 'gojs';
-import { ReactDiagram } from 'gojs-react';
 import { useState, useRef, useCallback } from 'react';
 import { dbFigure, keyFigure} from '../helpers/figures';
-import { DbManagementBar } from './DbManagementBar';
-import { MsManagementBar } from './MsManagementBar';
 import { MicroservicesDiagram } from './MicroservicesDiagram';
 import { DbDiagram } from './DbDiagram';
 
@@ -12,26 +9,32 @@ import { MainMenu } from './MainMenu';
 import Header from './Header';
 
 import './../css/main.scss';
-import { nodedata, linkdata } from './../assets/data';
+import { nodedata, linkdata, nodedata_basic, linkdata_basic } from './../assets/data';
+import test_data from './../assets/test_data.json';
+import { dbModel } from './models/db.model';
 
 //const diagrams = new Map([['main', diagram]]);
 const diagrams = new Map();
 
 export function MainComponent() {
-  const [nodes, setNodes] = useState(nodedata);
-  const [links, setLinks] = useState(linkdata);
+  //const [nodes, setNodes] = useState(nodedata);
+  //const [links, setLinks] = useState(linkdata);
+  const [nodes, setNodes] = useState(nodedata_basic);
+  const [links, setLinks] = useState(linkdata_basic);
   const [moleculerOptions, setMoleculerOptions] = useState({});
 
   let globalDiagram = useRef('');
 
   const [isFormDisplayed, setFormDisplay] = useState(false);
   const [metadataToggle, setMetadataToggle] = useState(false);
+  const [eventToggle, setEventToggle] = useState(false);
+  const [currentLink, setCurrentLink] = useState({});
 
   const [currentModel, setCurrentModel] = useState('main');
   const [metadata, setMetadata] = useState({});
 
   const diagramData = {
-    nodes, setNodes, links, setLinks, isFormDisplayed, setFormDisplay, metadata, setMetadata
+    nodes, setNodes, links, setLinks, isFormDisplayed, setFormDisplay, metadata, setMetadata, eventToggle, setEventToggle, currentLink, setCurrentLink,
   };
 
   const [, updateState] = useState();
@@ -62,6 +65,10 @@ export function MainComponent() {
     dbRelationship,
     invokePopup,
     openMetadata,
+    eventToggle, 
+    setEventToggle,
+    currentLink, 
+    setCurrentLink,
   };
 
   function changeDiagram(new_diagram) {
@@ -122,6 +129,54 @@ export function MainComponent() {
     forceUpdate();
   }
 
+  function setTestScheme() {
+    //setNodes(nodedata);
+    //setLinks(linkdata);
+
+    for (let k in test_data) {
+      if (k === 'main') {
+        const data = go.Model.fromJson(test_data.main);
+        setNodes({...nodes, [k]: data.nodeDataArray});
+        setLinks({...links, [k]: data.linkDataArray});
+        const main_diagram = diagrams.get('main');
+        main_diagram.model = data;
+      } else if (k === 'options') {
+        return;
+      } else {
+        const data = go.Model.fromJson(test_data[k]);
+        setNodes({...nodes, [k]: data.nodeDataArray});
+        setLinks({...links, [k]: data.linkDataArray});
+
+        const db = dbModel(go, {nodes: {...nodes, [k]: data.nodeDataArray}, links: {...links, [k]: data.linkDataArray}, modelName: k, dbRelationship});
+        diagrams.set(k, db);
+      }
+    }
+  }
+
+  function renderDiagram(currentModel) {
+    if (currentModel === 'main') {
+      return (<MicroservicesDiagram 
+        diagram={globalDiagram}
+        microserviceName={microserviceName}
+        currentModel={currentModel}
+        arrowType={arrowType}
+        metadataToggle={metadataToggle} 
+        setMetadataToggle={() => setMetadataToggle(false)}
+        init={() => init(currentModel)}
+        { ...diagramData }
+      />);
+    } else {
+      return (<DbDiagram 
+        globalDiagram={globalDiagram}
+        currentModel={currentModel}
+        setCurrentModel={setCurrentModel}
+        init={() => init(currentModel)}
+        dbRelationship={dbRelationship}
+        { ...diagramData }
+      />);
+    }
+  }
+
   return (
     <div>
       <Header></Header>
@@ -130,28 +185,11 @@ export function MainComponent() {
           saveSchemeHandler={saveSchemeHandler} 
           moleculerOptions={moleculerOptions} 
           setMoleculerOptions={setMoleculerOptions}
+          setTestScheme={setTestScheme}
         ></MainMenu>
-        { currentModel === 'main' ? 
-          <MicroservicesDiagram 
-            diagram={globalDiagram}
-            microserviceName={microserviceName}
-            currentModel={currentModel}
-            arrowType={arrowType}
-            metadataToggle={metadataToggle} 
-            setMetadataToggle={() => setMetadataToggle(false)}
-            init={() => init(currentModel)}
-            { ...diagramData }
-          />
-          : 
-          <DbDiagram 
-            globalDiagram={globalDiagram}
-            currentModel={currentModel}
-            setCurrentModel={setCurrentModel}
-            init={() => init(currentModel)}
-            dbRelationship={dbRelationship}
-            { ...diagramData }
-          />
-          }
+        { 
+          renderDiagram(currentModel)
+        }
       </div>
     </div>
   );

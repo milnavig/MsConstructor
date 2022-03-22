@@ -33,7 +33,6 @@ export function DbManagementBar({currentModel, addTable, selectRelationship, onC
   };
 
   const removeField = (i) => {
-    console.log(i)
     tableInfo.fields.splice(i, 1);
     setTableInfo(tableInfo);
     setFieldsLength(--fieldsLength);
@@ -162,7 +161,7 @@ export function DbManagementBar({currentModel, addTable, selectRelationship, onC
                     (e) => changeField(tableInfo.fields, `field_${i}`, { pkClicked: true })
                   } id={`pk_${i}`}></input>
                   <label className="form-check-label" htmlFor={`pk_${i}`}>
-                    Primary key (PK):
+                    Primary key (PK)
                   </label>
                 </div>
               </div>)

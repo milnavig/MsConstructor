@@ -14,6 +14,9 @@ export const microservicesModel = (go, {
   dbRelationship,
   invokePopup,
   openMetadata,
+  setEventToggle,
+  currentLink, 
+  setCurrentLink,
 }) => {
   const $ = go.GraphObject.make;
 
@@ -40,13 +43,13 @@ export const microservicesModel = (go, {
       $(go.Panel, "Horizontal",
         { alignment: go.Spot.Left },
         $(go.Shape,  
-          { width: 4, height: 4, portId: "In", toSpot: go.Spot.LeftSide,
-            toLinkable: true })),
+          { width: 4, height: 4, toSpot: go.Spot.LeftSide,
+            toLinkable: true }, new go.Binding("portId", "group", (id) => id + "_in"))),
       $(go.Panel, "Horizontal",
         { alignment: go.Spot.Right },
         $(go.Shape,  // the "Out" port
-          { width: 4, height: 4, portId: "Out", fromSpot: go.Spot.RightSide,
-            fromLinkable: true })),
+          { width: 4, height: 4, fromSpot: go.Spot.RightSide,
+            fromLinkable: true }, new go.Binding("portId", "group", (id) => id + "_out"))),
       $(go.Panel, "Horizontal",
         { margin: 10 },
         // method name, underlined if scope=="class" to indicate static method
@@ -269,13 +272,13 @@ export const microservicesModel = (go, {
       $(go.Panel, "Horizontal",
         { alignment: go.Spot.Left },
         $(go.Shape,  
-          { width: 6, height: 6, portId: "In", toSpot: go.Spot.LeftSide,
-            toLinkable: true })),
+          { width: 6, height: 6, toSpot: go.Spot.LeftSide,
+            toLinkable: true }, new go.Binding("portId", "key", (id) => id + "_in"))),
       $(go.Panel, "Horizontal",
         { alignment: go.Spot.Right },
         $(go.Shape,  // the "Out" port
-          { width: 6, height: 6, portId: "Out", fromSpot: go.Spot.RightSide,
-            fromLinkable: true })),
+          { width: 6, height: 6, fromSpot: go.Spot.RightSide,
+            fromLinkable: true }, new go.Binding("portId", "key", (id) => id + "_out"))),
       $(go.Panel, "Vertical",
         { defaultAlignment: go.Spot.Left, margin: 10, /*padding: 200*/ },
         $(go.Panel, "Horizontal",
@@ -294,16 +297,6 @@ export const microservicesModel = (go, {
   
   const gtwtemplate = $(go.Group, "Auto",
     { // define the group's internal layout
-      contextMenu:     // define a context menu for each node
-        $("ContextMenu",  // that has one button
-          $("ContextMenuButton",
-            {
-              "ButtonBorder.fill": "white",
-              "_buttonFillOver": "skyblue"
-            },
-            $(go.TextBlock, {font: "16px sans-serif"}, "Додати метод"),
-            { click: handleAddMethod }),
-        ),  // end Adornment
       // the group begins unexpanded;
       // upon expansion, a Diagram Listener will generate contents for the group
       isSubGraphExpanded: false,
@@ -350,6 +343,8 @@ export const microservicesModel = (go, {
   diagram.model = new go.GraphLinksModel({
     copiesArrays: true,
     copiesArrayObjects: true,
+    linkFromPortIdProperty: "fromPort",
+    linkToPortIdProperty: "toPort",
     nodeDataArray: nodes.main,
     linkDataArray: links.main,
   });
@@ -362,6 +357,12 @@ export const microservicesModel = (go, {
   diagram.addDiagramListener("LinkDrawn", function(e) {
     let link = e.subject;
     link.data.relationship = arrowType.current;
+
+    if (link.data.relationship === "event") {
+      setEventToggle(true);
+      setCurrentLink(link.data);
+    }
+
     if (link.data.from.startsWith("endpoint")) {
       if (diagram.findNodeForKey(link.data.to)?.data.type === "microservice") {
         e.diagram.remove(link);

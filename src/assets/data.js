@@ -1,3 +1,11 @@
+export let nodedata_basic = {
+  main: [],
+};
+
+export let linkdata_basic = {
+  main: [],
+};
+
 export let nodedata = {
   main: [
     { key: 'microservice-1', type: "microservice", isGroup: true },
@@ -14,9 +22,9 @@ export let nodedata = {
       key: "Table1",
       widths: [NaN, NaN, 60],
       fields: [
-        { name: "field1", info: "first field", datatype: "integer", type: "pk" },
-        { name: "field2", info: "the second one", datatype: "text", type: "fk" },
-        { name: "fieldThree", info: "3rd", datatype: "text", type: "figure" }
+        { name: "field1", meta: "NOT NULL", datatype: "integer", type: "pk" },
+        { name: "field2", meta: "NOT NULL", datatype: "text", type: "fk" },
+        { name: "fieldThree", meta: "NOT NULL", datatype: "text", type: "figure" }
       ],
       loc: "0 0"
     },
@@ -24,10 +32,10 @@ export let nodedata = {
       key: "Table2",
       widths: [NaN, NaN, NaN],
       fields: [
-        { name: "fieldA", info: "", datatype: "integer", type: "pk" },
-        { name: "fieldB", info: "", datatype: "integer", type: "field" },
-        { name: "fieldC", info: "", datatype: "integer", type: "fk" },
-        { name: "fieldD", info: "fourth", datatype: "integer", type: "field" }
+        { name: "fieldA", meta: "", datatype: "integer", type: "pk" },
+        { name: "fieldB", meta: "", datatype: "integer", type: "field" },
+        { name: "fieldC", meta: "", datatype: "integer", type: "fk" },
+        { name: "fieldD", meta: "NOT NULL", datatype: "integer", type: "field" }
       ],
       loc: "250 0"
     },
@@ -35,10 +43,10 @@ export let nodedata = {
       key: "Table3",
       widths: [NaN, NaN, NaN],
       fields: [
-        { name: "field3", info: "", datatype: "integer", type: "pk" },
-        { name: "field4", info: "", datatype: "integer", type: "fk" },
-        { name: "field5", info: "", datatype: "integer", type: "field" },
-        { name: "field6", info: "fourth", datatype: "integer", type: "fk" }
+        { name: "field3", meta: "", datatype: "integer", type: "pk" },
+        { name: "field4", meta: "", datatype: "integer", type: "fk" },
+        { name: "field5", meta: "", datatype: "integer", type: "field" },
+        { name: "field6", meta: "NOT NULL", datatype: "integer", type: "fk" }
       ],
       loc: "250 150"
     }
