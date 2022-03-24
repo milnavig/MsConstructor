@@ -1,7 +1,4 @@
-import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import { useState } from 'react';
-import { datatypes} from './../helpers/datatypes';
 import { DbManagementBar } from './DbManagementBar';
 
 import './../css/dbManagementBar.scss';
@@ -27,7 +24,9 @@ export function DbDiagram({globalDiagram, nodes, setNodes, init, currentModel, s
     <div>
       <DbManagementBar 
         currentModel={currentModel} 
-        onClick={(e) => setCurrentModel('main')} 
+        onClick={(e) => {
+          setCurrentModel('main');
+        }} 
         addTable={addTable} 
         selectRelationship={(type) => dbRelationship.current = type}
       ></DbManagementBar>

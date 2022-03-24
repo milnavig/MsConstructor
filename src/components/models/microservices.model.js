@@ -15,7 +15,6 @@ export const microservicesModel = (go, {
   invokePopup,
   openMetadata,
   setEventToggle,
-  currentLink, 
   setCurrentLink,
 }) => {
   const $ = go.GraphObject.make;
@@ -345,6 +344,7 @@ export const microservicesModel = (go, {
     copiesArrayObjects: true,
     linkFromPortIdProperty: "fromPort",
     linkToPortIdProperty: "toPort",
+    linkKeyProperty: "id",
     nodeDataArray: nodes.main,
     linkDataArray: links.main,
   });
@@ -358,11 +358,6 @@ export const microservicesModel = (go, {
     let link = e.subject;
     link.data.relationship = arrowType.current;
 
-    if (link.data.relationship === "event") {
-      setEventToggle(true);
-      setCurrentLink(link.data);
-    }
-
     if (link.data.from.startsWith("endpoint")) {
       if (diagram.findNodeForKey(link.data.to)?.data.type === "microservice") {
         e.diagram.remove(link);
@@ -370,6 +365,11 @@ export const microservicesModel = (go, {
       link.data.relationship = "api";
       e.diagram.model.setCategoryForLinkData(link.data, link.data.relationship);
       return;
+    }
+
+    if (link.data.relationship === "event") {
+      setEventToggle(true);
+      setCurrentLink(link.data);
     }
 
     e.diagram.model.setCategoryForLinkData(link.data, link.data.relationship);

@@ -7,12 +7,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import ApiIcon from '@mui/icons-material/Api';
 import HubIcon from '@mui/icons-material/Hub';
-import { MicroserviceIcon } from '../assets/icons/MicroserviceIcon';
 
 import './../css/dbManagementBar.scss';
 
 import { Button, Modal, ModalBody, ModalHeader, ModalFooter, Input } from 'reactstrap';
-import SwitchUnstyled, { switchUnstyledClasses } from '@mui/base/SwitchUnstyled';
+import { switchUnstyledClasses } from '@mui/base/SwitchUnstyled';
 
 const blue = {
   500: '#007FFF',
@@ -91,7 +90,7 @@ const Root = styled('span')(
   `,
 );
 
-export function MsManagementBar({addMethod, addMicroservice, setGatewayFrom, microserviceName, displayForm, setDisplayForm, arrowType, clear}) {
+export function MsManagementBar({addMethod, setGatewayFrom, microserviceName, displayForm, setDisplayForm, arrowType, clear, setMicroserviceNameToggle}) {
   //const [displayForm, setDisplayForm] = useState(false);
   let [propsLength, setPropsLength] = useState(1);
   const [methodInfo, setMethodInfo] = useState({
@@ -143,7 +142,7 @@ export function MsManagementBar({addMethod, addMicroservice, setGatewayFrom, mic
             display: 'flex',
           }}
         >
-          <MuiButton variant="outlined" sx={{margin: 1}} onClick={addMicroservice} startIcon={<HubIcon />}>
+          <MuiButton variant="outlined" sx={{margin: 1}} onClick={() => setMicroserviceNameToggle(true)} startIcon={<HubIcon />}>
             Додати мікросервіс
           </MuiButton>
           <MuiButton variant="outlined" sx={{margin: 1}} onClick={setGatewayFrom} startIcon={<ApiIcon />}>
@@ -162,12 +161,14 @@ export function MsManagementBar({addMethod, addMicroservice, setGatewayFrom, mic
               setToggle(!toggle);
             }}>Sync RPC</MuiButton>
           </ButtonGroup>
-          <div className="connection">
-            <SwitchUnstyled component={Root} defaultChecked />
-          </div>
-          <div className="connection">
-            API-шлюз
-          </div>
+          {
+            //<div className="connection">
+            //  <SwitchUnstyled component={Root} defaultChecked />
+            //</div>
+            //<div className="connection">
+            //  API-шлюз
+            //</div>
+          }
           <IconButton sx={{margin: 1}} aria-label="delete" size="large" color="error" onClick={clear}>
             <DeleteIcon />
           </IconButton>
@@ -239,10 +240,11 @@ export function MsManagementBar({addMethod, addMicroservice, setGatewayFrom, mic
               addMethod(e, methodInfo);
               setDisplayForm(false);
               setMethodInfo({
-                microservice: "",
+                microservice: microserviceName,
                 name: "",
                 props: [],
               });
+              setPropsLength(1);
             }}
           >
             Додати

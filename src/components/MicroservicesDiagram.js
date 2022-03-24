@@ -1,10 +1,11 @@
 import * as go from 'gojs';
 import { ReactDiagram } from 'gojs-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MetadataModal } from './modals/MetadataModal';
 import { MsManagementBar } from './MsManagementBar';
 import { GatewayModal } from './modals/GatewayModal';
 import { EventModal } from './modals/EventModal';
+import { MicroservicesModal } from './modals/MicroservicesModal';
 
 export function MicroservicesDiagram({
   diagram, 
@@ -26,10 +27,10 @@ export function MicroservicesDiagram({
   setCurrentLink,
 }) {
   const [gatewayToggle, setGatewayToggle] = useState(false);
+  const [microserviceNameToggle, setMicroserviceNameToggle] = useState(false);
 
   function addMethod(event, data) {
     event.preventDefault();
-    
     const microserviceName = data.microservice;
     const methodName = data.name;
     const props = data.props.map(prop => ({ name: prop.name, type: prop.type }));
@@ -41,10 +42,16 @@ export function MicroservicesDiagram({
       key: methodName, group: microserviceName, color: go.Brush.randomColor(), type: "method", parameters: props
     });
   }
-
+  /*
   function addMicroservice(e) {
     setNodes({...nodes, [currentModel]: [...nodes[currentModel], { key: 'microservice-45', type: "microservice", isGroup: true }]});
     diagram.current.model.addNodeData({ key: 'microservice-45', type: "microservice", isGroup: true });
+  }
+  */
+  function saveMicroserviceName(name) {
+    setNodes({...nodes, [currentModel]: [...nodes[currentModel], { key: name, type: "microservice", isGroup: true }]});
+    diagram.current.model.addNodeData({ key: name, type: "microservice", isGroup: true });
+    setMicroserviceNameToggle(false);
   }
 
   function handleAddGateway(endpoints) {
@@ -76,6 +83,11 @@ export function MicroservicesDiagram({
   }
 
   return (<div>
+    <MicroservicesModal
+      isOpen={microserviceNameToggle} 
+      toggle={() => setMicroserviceNameToggle(false)}
+      saveMicroserviceName={saveMicroserviceName}
+    ></MicroservicesModal>
     <GatewayModal 
       isOpen={gatewayToggle} 
       toggle={() => setGatewayToggle(false)}
@@ -90,12 +102,12 @@ export function MicroservicesDiagram({
     ></EventModal>
     <MsManagementBar 
       addMethod={addMethod} 
-      addMicroservice={addMicroservice}
       arrowType={arrowType}
       microserviceName={microserviceName.current}
       displayForm={displayForm} 
       setDisplayForm={setDisplayForm}
       setGatewayFrom={() => setGatewayToggle(true)}
+      setMicroserviceNameToggle={setMicroserviceNameToggle}
       clear={clear}
     ></MsManagementBar>
     <MetadataModal

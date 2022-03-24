@@ -1,5 +1,3 @@
-import * as go from 'gojs';
-import { ReactDiagram } from 'gojs-react';
 import { useState } from 'react';
 import { datatypes} from './../helpers/datatypes';
 import Box from '@mui/material/Box';
@@ -15,7 +13,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 
 export function DbManagementBar({currentModel, addTable, selectRelationship, onClick}) {
   const [displayForm, setDisplayForm] = useState(false);
-  const [fieldsLength, setFieldsLength] = useState(1);
+  let [fieldsLength, setFieldsLength] = useState(1);
   const [tableInfo, setTableInfo] = useState({
     name: '',
     fields: [],
@@ -189,6 +187,7 @@ export function DbManagementBar({currentModel, addTable, selectRelationship, onC
                 name: '',
                 fields: [],
               });
+              setFieldsLength(1);
             }}
           >
             Додати

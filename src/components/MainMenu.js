@@ -17,27 +17,13 @@ import { BrokerModal } from './modals/BrokerModal';
 import { LoggerModal } from './modals/LoggerModal';
 import { TracingModal } from './modals/TracingModal';
 
-export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions, setTestScheme}) {
+export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions, setTestScheme, openSchemeHandler}) {
   const [displayBrokerForm, setDisplayBrokerForm] = useState(false);
   const [displayLoggerForm, setDisplayLoggerForm] = useState(false);
   const [displayDiscoveryForm, setDisplayDiscoveryForm] = useState(false);
   const [displayBalancerForm, setDisplayBalancerForm] = useState(false);
   const [displayTracingForm, setDisplayTracingForm] = useState(false);
   //const [moleculerOptions, setMoleculerOptions] = useState({});
-
-  function openSchemeHandler() {
-    const upload = document.getElementById("fileupload");
-    upload.click();
-    upload.onchange = function(e) { 
-      let file = upload.files[0];
-      let read = new FileReader();
-
-      read.readAsBinaryString(file);
-      read.onloadend = function() {
-        console.log(read.result);
-      }
-    }
-  }
 
   return (
     <div>

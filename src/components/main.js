@@ -1,5 +1,5 @@
 import * as go from 'gojs';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { dbFigure, keyFigure} from '../helpers/figures';
 import { MicroservicesDiagram } from './MicroservicesDiagram';
 import { DbDiagram } from './DbDiagram';
@@ -9,16 +9,13 @@ import { MainMenu } from './MainMenu';
 import Header from './Header';
 
 import './../css/main.scss';
-import { nodedata, linkdata, nodedata_basic, linkdata_basic } from './../assets/data';
+import { nodedata_basic, linkdata_basic } from './../assets/data';
 import test_data from './../assets/test_data.json';
 import { dbModel } from './models/db.model';
 
-//const diagrams = new Map([['main', diagram]]);
 const diagrams = new Map();
 
 export function MainComponent() {
-  //const [nodes, setNodes] = useState(nodedata);
-  //const [links, setLinks] = useState(linkdata);
   const [nodes, setNodes] = useState(nodedata_basic);
   const [links, setLinks] = useState(linkdata_basic);
   const [moleculerOptions, setMoleculerOptions] = useState({});
@@ -130,9 +127,6 @@ export function MainComponent() {
   }
 
   function setTestScheme() {
-    //setNodes(nodedata);
-    //setLinks(linkdata);
-
     for (let k in test_data) {
       if (k === 'main') {
         const data = go.Model.fromJson(test_data.main);
@@ -149,6 +143,52 @@ export function MainComponent() {
 
         const db = dbModel(go, {nodes: {...nodes, [k]: data.nodeDataArray}, links: {...links, [k]: data.linkDataArray}, modelName: k, dbRelationship});
         diagrams.set(k, db);
+      }
+    }
+  }
+
+  function openSchemeHandler() {
+    const upload = document.getElementById("fileupload");
+    upload.click();
+    upload.onchange = function(e) { 
+      let file = upload.files[0];
+      let read = new FileReader();
+
+      read.readAsBinaryString(file);
+      read.onloadend = function() {
+        const raw_data = JSON.parse(read.result);
+        for (let k in raw_data) {
+          if (k === 'main') {
+            const data = go.Model.fromJson(raw_data.main);
+            setNodes({...nodes, [k]: data.nodeDataArray});
+            setLinks({...links, [k]: data.linkDataArray});
+            const main_diagram = diagrams.get('main');
+            //main_diagram.clear();
+            //main_diagram.currentTool.doCancel();
+            //main_diagram.model = data;
+
+            //main_diagram.startTransaction("modify nodeDataArray and linkDataArray");
+            //main_diagram.model.nodeDataArray = data.nodeDataArray;
+            //main_diagram.model.linkDataArray = data.linkDataArray;
+            //main_diagram.commitTransaction("modify nodeDataArray and linkDataArray");
+
+            main_diagram.startTransaction("modify nodeDataArray and linkDataArray");
+            //main_diagram.clear();
+            //main_diagram.currentTool.doCancel();
+            main_diagram.model.mergeNodeDataArray(data.nodeDataArray);
+            main_diagram.model.mergeLinkDataArray(data.linkDataArray);
+            main_diagram.commitTransaction("modify nodeDataArray and linkDataArray");
+          } else if (k === 'options') {
+            return;
+          } else {
+            const data = go.Model.fromJson(raw_data[k]);
+            setNodes({...nodes, [k]: data.nodeDataArray});
+            setLinks({...links, [k]: data.linkDataArray});
+    
+            const db = dbModel(go, {nodes: {...nodes, [k]: data.nodeDataArray}, links: {...links, [k]: data.linkDataArray}, modelName: k, dbRelationship});
+            diagrams.set(k, db);
+          }
+        }
       }
     }
   }
@@ -177,6 +217,10 @@ export function MainComponent() {
     }
   }
 
+  useEffect(() => {
+    //console.log(diagrams.get('main').model.toJson());
+  });
+
   return (
     <div>
       <Header></Header>
@@ -186,6 +230,7 @@ export function MainComponent() {
           moleculerOptions={moleculerOptions} 
           setMoleculerOptions={setMoleculerOptions}
           setTestScheme={setTestScheme}
+          openSchemeHandler={openSchemeHandler}
         ></MainMenu>
         { 
           renderDiagram(currentModel)

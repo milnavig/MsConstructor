@@ -175,7 +175,7 @@ export default function Header() {
             sx={{ display: { xs: 'none', sm: 'block' } }}
           >
             <img src={logo} className="logo" />
-            MicroserviceBlocker
+            MsBuilder
           </Typography>
           <Search>
             <SearchIconWrapper>
