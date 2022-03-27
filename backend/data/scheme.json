@@ -1,0 +1,53 @@
+{
+  "main": "{ \"class\": \"GraphLinksModel\",\n  \"copiesArrays\": true,\n  \"copiesArrayObjects\": true,\n  \"linkFromPortIdProperty\": \"fromPort\",\n  \"linkToPortIdProperty\": \"toPort\",\n  \"nodeDataArray\": [\n{\"key\":\"microservice-1\",\"type\":\"microservice\",\"isGroup\":true,\"loc\":\"-325 -29.999999999999996\"},\n{\"key\":\"microservice-2\",\"type\":\"microservice\",\"isGroup\":true,\"loc\":\"530 -110\"},\n{\"key\":\"microservice-3\",\"type\":\"microservice\",\"isGroup\":true,\"loc\":\"-5 260\"},\n{\"key\":\"func1\",\"group\":\"microservice-1\",\"type\":\"method\",\"parameters\":[{\"name\":\"amount\",\"type\":\"Currency\"}]},\n{\"key\":\"func2\",\"group\":\"microservice-1\",\"type\":\"method\",\"parameters\":[{\"name\":\"amount\",\"type\":\"Currency\"}]},\n{\"key\":\"func3\",\"group\":\"microservice-2\",\"type\":\"method\",\"parameters\":[{\"name\":\"amount\",\"type\":\"Currency\"}]},\n{\"key\":\"func4\",\"group\":\"microservice-3\",\"type\":\"method\",\"parameters\":[{\"name\":\"amount\",\"type\":\"Currency\"}]},\n{\"key\":\"db1\",\"name\":\"db1\",\"type\":\"db\",\"category\":\"db\"}\n],\n  \"linkDataArray\": [\n{\"from\":\"microservice-1\",\"to\":\"microservice-2\",\"relationship\":\"event\"},\n{\"from\":\"microservice-1\",\"to\":\"db1\",\"relationship\":\"db\"},\n{\"from\":\"func1\",\"to\":\"func3\",\"fromPort\":\"microservice-1_out\",\"toPort\":\"microservice-2_in\",\"relationship\":\"rpc\",\"category\":\"rpc\"},\n{\"from\":\"func2\",\"to\":\"func4\",\"fromPort\":\"microservice-1_out\",\"toPort\":\"microservice-3_in\",\"relationship\":\"rpc\",\"category\":\"rpc\"}\n]}",
+  "db1": "{ \"class\": \"GraphLinksModel\",\n  \"copiesArrays\": true,\n  \"copiesArrayObjects\": true,\n  \"linkFromPortIdProperty\": \"fromPort\",\n  \"linkToPortIdProperty\": \"toPort\",\n  \"nodeDataArray\": [\n{\"key\":\"Table1\",\"widths\":[{\"class\":\"NaN\"},{\"class\":\"NaN\"},60],\"fields\":[{\"name\":\"field1\",\"meta\":\"NOT NULL\",\"datatype\":\"integer\",\"type\":\"pk\"},{\"name\":\"field2\",\"meta\":\"NOT NULL\",\"datatype\":\"text\",\"type\":\"fk\"},{\"name\":\"fieldThree\",\"meta\":\"NOT NULL\",\"datatype\":\"text\",\"type\":\"figure\"}],\"loc\":\"0 0\"},\n{\"key\":\"Table2\",\"widths\":[{\"class\":\"NaN\"},{\"class\":\"NaN\"},{\"class\":\"NaN\"}],\"fields\":[{\"name\":\"fieldA\",\"meta\":\"\",\"datatype\":\"integer\",\"type\":\"pk\"},{\"name\":\"fieldB\",\"meta\":\"\",\"datatype\":\"integer\",\"type\":\"field\"},{\"name\":\"fieldC\",\"meta\":\"\",\"datatype\":\"integer\",\"type\":\"fk\"},{\"name\":\"fieldD\",\"meta\":\"NOT NULL\",\"datatype\":\"integer\",\"type\":\"field\"}],\"loc\":\"250 0\"},\n{\"key\":\"Table3\",\"widths\":[{\"class\":\"NaN\"},{\"class\":\"NaN\"},{\"class\":\"NaN\"}],\"fields\":[{\"name\":\"field3\",\"meta\":\"\",\"datatype\":\"integer\",\"type\":\"pk\"},{\"name\":\"field4\",\"meta\":\"\",\"datatype\":\"integer\",\"type\":\"fk\"},{\"name\":\"field5\",\"meta\":\"\",\"datatype\":\"integer\",\"type\":\"field\"},{\"name\":\"field6\",\"meta\":\"NOT NULL\",\"datatype\":\"integer\",\"type\":\"fk\"}],\"loc\":\"250 150\"}\n],\n  \"linkDataArray\": [\n{\"from\":\"Table1\",\"fromPort\":\"field1\",\"to\":\"Table2\",\"toPort\":\"fieldC\",\"relationship\":\"one-to-many\"},\n{\"from\":\"Table1\",\"fromPort\":\"field2\",\"to\":\"Table3\",\"toPort\":\"field4\",\"relationship\":\"many-to-many\"},\n{\"from\":\"Table2\",\"fromPort\":\"fieldD\",\"to\":\"Table3\",\"toPort\":\"field6\",\"relationship\":\"one-to-many\"}\n]}",
+  "options": {
+    "logger": {
+      "logger": "Console",
+      "logLevel": "info",
+      "color": "false",
+      "moduleColor": "true",
+      "formatter": "full"
+    },
+    "broker": {
+      "transporter": "TCP",
+      "serializer": "JSON",
+      "circuitBraker": {
+        "enabled": false,
+        "threshold": 0.5,
+        "minRequestCount": 20,
+        "windowTime": 60,
+        "halfOpenTime": 10000
+      },
+      "retry": {
+        "enabled": false,
+        "retries": 5,
+        "delay": 100,
+        "maxDelay": 2000,
+        "factor": 2
+      },
+      "bulkhead": {
+        "enabled": false,
+        "concurrency": 3,
+        "maxQueueSize": 10
+      }
+    },
+    "serviceDiscovery": {
+      "discoverer": "Local",
+      "heartbeatInterval": 10,
+      "heartbeatTimeout": 30
+    },
+    "loadBalancer": {
+      "strategy": "RoundRobin",
+      "sampleCount": 3,
+      "lowCpuUsage": 10,
+      "lowLatency": 10,
+      "collectCount": 5,
+      "pingInterval": 10
+    },
+    "tracing": {
+      "enable": false,
+      "exporter": "Console"
+    }
+  }
+}
