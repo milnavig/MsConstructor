@@ -2,14 +2,8 @@ import { useState } from 'react';
 import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap';
 import TextField from '@mui/material/TextField';
 
-export function EventModal({isOpen, toggle, diagram, currentLink}) {
-  const [eventName, setEventName] = useState("");
-
-  const saveEventName = () => {
-    const link = diagram.current.findLinkForData(currentLink);
-    link.data.eventName = eventName;
-    console.log(link.data);
-  };
+export function SettingsModal({isOpen, toggle, saveAppName}) {
+  const [appName, setAppName] = useState("");
 
   return (
     <Modal 
@@ -18,13 +12,13 @@ export function EventModal({isOpen, toggle, diagram, currentLink}) {
       toggle={toggle}
     >
       <ModalHeader toggle={toggle}>
-        Подія
+        Налаштування
       </ModalHeader>
       <ModalBody>
         <TextField sx={{width: "100%"}}
-          label="Назва події"
-          value={eventName ?? ""}
-          onChange={(e) => setEventName(e.target.value)}
+          label="Назва додатку"
+          value={appName ?? ""}
+          onChange={(e) => setAppName(e.target.value)}
         />
       </ModalBody>
       <ModalFooter>
@@ -32,7 +26,8 @@ export function EventModal({isOpen, toggle, diagram, currentLink}) {
           color="primary"
           onClick={(e) => {
             e.preventDefault();
-            saveEventName();
+            saveAppName(appName);
+            setAppName("");
             toggle(false);
           }}
         >

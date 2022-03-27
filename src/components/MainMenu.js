@@ -16,13 +16,15 @@ import { LoadBalancerModal } from './modals/LoadBalancerModal';
 import { BrokerModal } from './modals/BrokerModal';
 import { LoggerModal } from './modals/LoggerModal';
 import { TracingModal } from './modals/TracingModal';
+import { SettingsModal } from './modals/SettingsModal';
 
-export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions, setTestScheme, openSchemeHandler}) {
+export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions, setTestScheme, openSchemeHandler, saveAppName}) {
   const [displayBrokerForm, setDisplayBrokerForm] = useState(false);
   const [displayLoggerForm, setDisplayLoggerForm] = useState(false);
   const [displayDiscoveryForm, setDisplayDiscoveryForm] = useState(false);
   const [displayBalancerForm, setDisplayBalancerForm] = useState(false);
   const [displayTracingForm, setDisplayTracingForm] = useState(false);
+  const [displaySettingsForm, setDisplaySettingsForm] = useState(false);
   //const [moleculerOptions, setMoleculerOptions] = useState({});
 
   return (
@@ -57,6 +59,11 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
         moleculerOptions={moleculerOptions} 
         setMoleculerOptions={setMoleculerOptions}
       ></TracingModal>
+      <SettingsModal
+        isOpen={displaySettingsForm} 
+        toggle={() => setDisplaySettingsForm(false)}
+        saveAppName={saveAppName}
+      ></SettingsModal>
       <Box
         sx={{
           display: "flex",
@@ -73,7 +80,7 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={openSchemeHandler} startIcon={<UploadIcon />}>
           Відкрити схему
         </MuiButton>
-        <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} startIcon={<SettingsIcon />}>
+        <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={() => setDisplaySettingsForm(true)} startIcon={<SettingsIcon />}>
           Загальні налаштування
         </MuiButton>
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={() => setDisplayBrokerForm(true)} startIcon={<ManageAccountsIcon />}>

@@ -91,7 +91,6 @@ const Root = styled('span')(
 );
 
 export function MsManagementBar({addMethod, setGatewayFrom, microserviceName, displayForm, setDisplayForm, arrowType, clear, setMicroserviceNameToggle}) {
-  //const [displayForm, setDisplayForm] = useState(false);
   let [propsLength, setPropsLength] = useState(1);
   const [methodInfo, setMethodInfo] = useState({
     microservice: microserviceName,

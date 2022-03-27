@@ -9,7 +9,6 @@ import Select from '@mui/material/Select';
 
 export function GatewayModal({isOpen, toggle, handleAddGateway}) {
   let [endpointsLength, setEndpointsLength] = useState(1);
-  //const [gatewayData, setGatewayData] = useState({});
   const [gatewayData, setGatewayData] = useState([]);
 
   const methods = [

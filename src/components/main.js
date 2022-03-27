@@ -217,6 +217,10 @@ export function MainComponent() {
     }
   }
 
+  function saveAppName(name) {
+    setMoleculerOptions({...moleculerOptions, name});
+  }
+
   useEffect(() => {
     //console.log(diagrams.get('main').model.toJson());
   });
@@ -231,6 +235,7 @@ export function MainComponent() {
           setMoleculerOptions={setMoleculerOptions}
           setTestScheme={setTestScheme}
           openSchemeHandler={openSchemeHandler}
+          saveAppName={saveAppName}
         ></MainMenu>
         { 
           renderDiagram(currentModel)
