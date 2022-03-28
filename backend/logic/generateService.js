@@ -26,12 +26,15 @@ ${action.parameters.map(parameter =>
 `        "${parameter.name}": "${parameter.type}",`).join('\n')}
       },
       handler(ctx) {
+        console.log('${msName}.${action.name} was called');
 ${
           action.calls.map(c => c.type === 'balanced_event' ?
 `        await ctx.call("${c.microservice}.${c.action}", {}, { meta: {
+
         }});` 
             :
 `        await ctx.broadcast("${c.microservice}.${c.action}", {}, { meta: {
+
         }});`)
 }
       }
@@ -49,7 +52,7 @@ ${
 `         "${parameter.name}": "${parameter.type}",`).join('\n')}
       },
       handler(ctx) {
-        //
+        console.log('${msName}.${method.name} was called');
       }
     },
       `).join('\n')
@@ -60,7 +63,7 @@ ${
 ${
     events.map(event => 
 `    "${event.name}"(ctx) {
-        //
+      console.log('Event ${event.name} was triggered on ${msName} service');
     },`
     ).join('\n')}
   },

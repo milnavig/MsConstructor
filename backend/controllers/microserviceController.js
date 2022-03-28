@@ -7,6 +7,12 @@ const generateDockerfile = require('./../logic/generateDockerfile');
 const generateDockerignore = require('./../logic/generateDockerignore');
 const generateGateway = require('./../logic/generateGateway');
 const generateDockerCompose = require('./../logic/generateDockerCompose');
+const generateConfig = require('./../logic/generateConfig');
+const archiver = require('archiver');
+
+const JSZip = require('jszip');
+//const FileSaver = require('file-saver');
+//const zip = new JSZip();
 const path = require('path');
 
 class MicroserviceController {
@@ -28,18 +34,57 @@ class MicroserviceController {
 
     generateDockerfiles(appName);
 
-    generateDockerignore();
+    generateDockerignores(appName);
+
+    generateConfigs(appName, model);
 
     generateGateways(appName, model);
 
     generateDockerComposeFiles(appName, model);
+
+    /* let data = zip.folder(appPath);
+    data.generateAsync({type: "nodebuffer"}).then((content) => {
+      fs.writeFileSync(`./output/${appName}/app.zip`, content);
+      console.log(`Created archive`);
+    }); */
+
+    const resPath = `./output/${appName}/app.zip`;
+
+    zipDirectory(appPath, resPath).then(() => {
+      console.log(`Created archive`);
     
-    return res.json("");
+      return res.download(resPath);
+    });
   }
 
   async read(req, res) {
     
   }
+}
+
+function zipDirectory(sourceDir, outPath) {
+  const archive = archiver('zip', { zlib: { level: 9 }});
+  const stream = fs.createWriteStream(outPath);
+
+  return new Promise((resolve, reject) => {
+    archive
+      .directory(sourceDir, false)
+      .on('error', err => reject(err))
+      .pipe(stream);
+
+    stream.on('close', () => resolve());
+    archive.finalize();
+  });
+}
+
+function generateDockerignores(appName) {
+  fs.writeFileSync(`./output/${appName}/.dockerignore`, generateDockerignore());
+  console.log(`Created dockerignore file!`);
+}
+
+function generateConfigs(appName, model) {
+  fs.writeFileSync(`./output/${appName}/moleculer.config.js`, generateConfig(model.options));
+  console.log(`Created moleculer config file!`);
 }
 
 function generateGateways(appName, model) {
@@ -54,10 +99,8 @@ function generateGateways(appName, model) {
   //console.log(gatewayData);
   const gtw = generateGateway(gatewayData);
 
-  fs.writeFile(`./output/${appName}/services/gateway.js`, gtw, function (err) {
-    if (err) throw err;
-    console.log(`Created gateway.js file!`);
-  });
+  fs.writeFileSync(`./output/${appName}/services/gateway.js`, gtw);
+  console.log(`Created gateway.js file!`);
 }
 
 function generateDbFiles(appName, model) {
@@ -81,10 +124,8 @@ function generateDbFiles(appName, model) {
       }));
       const sql = generateDB(tables);
 
-      fs.writeFile(`./output/${appName}/db/${key}.sql`, sql, function (err) {
-        if (err) throw err;
-        console.log(`Created ${key}.sql file!`);
-      });
+      fs.writeFileSync(`./output/${appName}/db/${key}.sql`, sql);
+      console.log(`Created ${key}.sql file!`);
     }
   }
 }
@@ -132,32 +173,24 @@ function generateServices(appName, model) {
 
     const code = generateService(ms.key, Object.values(actions), Object.values(methods), meta, events);
 
-    fs.writeFile(`./output/${appName}/services/${ms.key}.js`, code, function (err) {
-      if (err) throw err;
-      console.log(`Created ${ms.key}.js`);
-    });
+    fs.writeFileSync(`./output/${appName}/services/${ms.key}.service.js`, code);
+    console.log(`Created ${ms.key}.js`);
   });
 }
 
 function generateBatFiles(appName) {
-  fs.writeFile(`./output/${appName}/deploy.bat`, generateBatFile(), function (err) {
-    if (err) throw err;
-    console.log('Created bat file!');
-  });
+  fs.writeFileSync(`./output/${appName}/deploy.bat`, generateBatFile());
+  console.log('Created bat file!');
 }
 
 function generatePackages(appName) {
-  fs.writeFile(`./output/${appName}/package.json`, generatePackage(), function (err) {
-    if (err) throw err;
-    console.log('Created package.json file!');
-  });
+  fs.writeFileSync(`./output/${appName}/package.json`, generatePackage());
+  console.log('Created package.json file!');
 }
 
 function generateDockerfiles(appName) {
-  fs.writeFile(`./output/${appName}/Dockerfile`, generateDockerfile(), function (err) {
-    if (err) throw err;
-    console.log('Created dockerfile!');
-  });
+  fs.writeFileSync(`./output/${appName}/Dockerfile`, generateDockerfile());
+  console.log('Created dockerfile!');
 }
 
 function generateDockerComposeFiles(appName, model) {
@@ -171,10 +204,8 @@ function generateDockerComposeFiles(appName, model) {
     service.db_name = l.to;
   });
 
-  fs.writeFile(`./output/${appName}/docker-compose.yml`, generateDockerCompose(isGateway, services, dbs), function (err) {
-    if (err) throw err;
-    console.log('Created docker-compose.yml!');
-  });
+  fs.writeFileSync(`./output/${appName}/docker-compose.yml`, generateDockerCompose(isGateway, services, dbs));
+  console.log('Created docker-compose.yml!');
 }
 
 module.exports = new MicroserviceController();

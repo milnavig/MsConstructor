@@ -93,11 +93,10 @@ export function MainComponent() {
   function saveSchemeHandler() {
     const scheme = {};
     diagrams.forEach((d, key) => {
-      //scheme[key] = d.model.modelData;
       scheme[key] = d.model.toJson(); //JSON.stringify(d.model, null, 2);
     });
     scheme.options = moleculerOptions;
-    console.log(scheme);
+    //console.log(scheme);
 
     download(JSON.stringify(scheme, null, 2));
   }
@@ -221,6 +220,41 @@ export function MainComponent() {
     setMoleculerOptions({...moleculerOptions, name});
   }
 
+  function generateApp() {
+    const scheme = {};
+    diagrams.forEach((d, key) => {
+      scheme[key] = d.model.toJson(); //JSON.stringify(d.model, null, 2);
+    });
+    scheme.options = moleculerOptions;
+
+    fetch("http://localhost:5000/api/create", {
+      method: 'POST',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(scheme)
+    }).then((res) => {
+      res.blob().then(blob => {
+        let file = new Blob([blob]);
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+          window.navigator.msSaveOrOpenBlob(file, 'data.zip');
+        else { // Others
+          let a = document.createElement("a"),
+                  url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = 'data.zip';
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+          }, 0); 
+        }
+      });
+    });
+  }
+
   useEffect(() => {
     //console.log(diagrams.get('main').model.toJson());
   });
@@ -230,6 +264,7 @@ export function MainComponent() {
       <Header></Header>
       <div className="main">
         <MainMenu 
+          generateApp={generateApp}
           saveSchemeHandler={saveSchemeHandler} 
           moleculerOptions={moleculerOptions} 
           setMoleculerOptions={setMoleculerOptions}

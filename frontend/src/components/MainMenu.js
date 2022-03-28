@@ -18,7 +18,7 @@ import { LoggerModal } from './modals/LoggerModal';
 import { TracingModal } from './modals/TracingModal';
 import { SettingsModal } from './modals/SettingsModal';
 
-export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions, setTestScheme, openSchemeHandler, saveAppName}) {
+export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions, setTestScheme, openSchemeHandler, saveAppName, generateApp}) {
   const [displayBrokerForm, setDisplayBrokerForm] = useState(false);
   const [displayLoggerForm, setDisplayLoggerForm] = useState(false);
   const [displayDiscoveryForm, setDisplayDiscoveryForm] = useState(false);
@@ -71,7 +71,7 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
         }}
       >
         <input id="fileupload" type="file" style={{display: "none"}} name="fileupload" /> 
-        <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} color="success" startIcon={<PlayArrowIcon />}>
+        <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={generateApp} color="success" startIcon={<PlayArrowIcon />}>
           Згенерувати програму
         </MuiButton>
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={saveSchemeHandler} startIcon={<DownloadIcon />}>

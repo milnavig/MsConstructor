@@ -18,12 +18,9 @@ ALTER TABLE ONLY public.${t.name}
 ${
   t.fk_array.map(fk => 
 `ALTER TABLE ONLY public.${t.name}
-  ADD CONSTRAINT ${t.name}_pkey FOREIGN KEY (${fk.name}) REFERENCES ${fk.table}(${fk.field});
-`).join('\n')
-}
-`).join('\n')
-}
-  `;
+  ADD CONSTRAINT ${t.name}_pkey FOREIGN KEY (${fk.name}) REFERENCES public.${fk.table}(${fk.field});
+`).join('\n')}`).join('\n')
+}`;
 
   return db;
 }

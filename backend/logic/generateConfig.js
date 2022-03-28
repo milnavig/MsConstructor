@@ -1,7 +1,9 @@
 module.exports = function generateConfig(options) {
   const namespace = "dev";
   const config = 
-`{
+`"use strict";
+
+module.exports = {
   namespace: ${namespace},
 
   logger: ${options.logger.logger},
@@ -48,7 +50,7 @@ module.exports = function generateConfig(options) {
       lowLatency: ${options.loadBalancer.lowLatency},
       collectCount: ${options.loadBalancer.collectCount},
       pingInterval: ${options.loadBalancer.pingInterval},
-    }
+    },
     preferLocal: true
   },
 

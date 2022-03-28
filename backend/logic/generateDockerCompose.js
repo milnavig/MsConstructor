@@ -58,7 +58,8 @@ ${databases.map(db =>
       # copy the sql script to create tables
       - ./db/${db.name}.sql:/docker-entrypoint-initdb.d/create_tables.sql
     networks:
-      - internal`).join('\n')}
+      - internal
+`).join('\n')}
     
   postgres:
     image: postgres:10.5
