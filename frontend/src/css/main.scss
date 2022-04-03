@@ -9,7 +9,7 @@
 }
 
 .main {
-  margin: 40px 10% 0 10%;
+  margin: 5px 5% 0 5%;
 }
 
 .connection {
@@ -31,4 +31,61 @@
 
 .margin-10 {
   margin: 10px;
+}
+
+html, body, .mainDiv, #root {
+  height: 100%;
+}
+
+.greetingPage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  .left {
+    width: 50%;
+    height: 100%;
+    background-color: #d4d6f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .big-logo {
+      
+    }
+  }
+
+  .right {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+
+    button {
+      width: 400px;
+      margin: 10px;
+    }
+
+    .toolName {
+      font-size: 46px;
+      padding-bottom: 20px;
+    }
+    .toolDescription {
+      font-size: 20px;
+      color: #808080;
+      padding-bottom: 120px;
+    }
+  }
+}
+
+.copyrights {
+  position: absolute;
+  bottom: 10px;
+  font-size: 18px;
+}
+
+.menuDiv {
+  margin: 30px 5% 0 5%;
 }

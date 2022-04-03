@@ -36,7 +36,7 @@ export const microservicesModel = (go, {
       new go.Binding("minLocation", "type", (t) => t === "method" ? new go.Point(NaN, NaN) : null),
       new go.Binding("maxLocation", "type", (t) => t === "method" ? new go.Point(NaN, NaN) : null),
       $(go.Shape, "Rectangle",
-        { fill: "#EEEEEE", stroke: null, strokeWidth: 0, width: 250 },
+        { fill: "#EEEEEE", stroke: null, strokeWidth: 0, width: 300 },
         //new go.Binding("fill", "color")
       ),
       $(go.Panel, "Horizontal",
@@ -69,11 +69,11 @@ export const microservicesModel = (go, {
             return s + ")";
           })),
         // method return type, if any
-        $(go.TextBlock, "",
+        /* $(go.TextBlock, "",
           new go.Binding("text", "type", t => t ? ": " : "")),
         $(go.TextBlock,
           { isMultiline: false, editable: true },
-          new go.Binding("text", "type").makeTwoWay())
+          new go.Binding("text", "type").makeTwoWay()) */
       ),
     );
 

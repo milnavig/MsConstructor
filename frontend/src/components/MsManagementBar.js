@@ -12,6 +12,8 @@ import './../css/dbManagementBar.scss';
 
 import { Button, Modal, ModalBody, ModalHeader, ModalFooter, Input } from 'reactstrap';
 import { switchUnstyledClasses } from '@mui/base/SwitchUnstyled';
+import { MenuItem } from '@mui/material';
+import Select from '@mui/material/Select';
 
 const blue = {
   500: '#007FFF',
@@ -120,7 +122,8 @@ export function MsManagementBar({addMethod, setGatewayFrom, microserviceName, di
     if (existingProp) { 
       if (changes.name) existingProp.name = changes.name;
       if (changes.type) existingProp.type = changes.type;
-      return props;
+
+      return methodInfo.props;
     };
 
     return [
@@ -128,7 +131,7 @@ export function MsManagementBar({addMethod, setGatewayFrom, microserviceName, di
       {
         id, 
         name: changes.name, 
-        type: changes.type ?? '', 
+        type: changes.type ?? 'any', 
       },
     ];
   }
@@ -204,17 +207,31 @@ export function MsManagementBar({addMethod, setGatewayFrom, microserviceName, di
                   <label className="form-check-label" htmlFor={`name_${i}`}>
                     Назва аргументу:
                   </label>
-                  <Input id={`name_${i}`} value={methodInfo[`prop_${i}`]?.name} type="text" name={`prop_${i}`} onInput={e => setMethodInfo(
+                  <Input id={`name_${i}`} value={methodInfo.props.find(p => p.id === `prop_${i}`)?.name} type="text" name={`prop_${i}`} onInput={e => setMethodInfo(
                     {...methodInfo, props: changeProps(methodInfo.props, `prop_${i}`, { name: e.target.value })}
                   )} placeholder="Введіть назву аргументу..." />
                 </div>
                 <div>
-                  <label className="form-check-label" htmlFor={`name_${i}`}>
+                  <label className="form-check-label" htmlFor={`name_${i}`} style={{paddingRight: "5px"}}>
                     Тип аргументу:
                   </label>
-                  <Input id={`name_${i}`} value={methodInfo[`prop_${i}`]?.name} type="text" name={`prop_${i}`} onInput={e => setMethodInfo(
+                  {/* <Input id={`name_${i}`} value={methodInfo[`prop_${i}`]?.name} type="text" name={`prop_${i}`} onInput={e => setMethodInfo(
                     {...methodInfo, props: changeProps(methodInfo.props, `prop_${i}`, { type: e.target.value })}
-                  )} placeholder="Введіть тип аргументу..." />
+                  )} placeholder="Введіть тип аргументу..." /> */}
+                  <Select
+                    id={`name_${i}`}
+                    value={methodInfo.props.find(p => p.id === `prop_${i}`)?.type ?? "any"}
+                    labelId="type-label"
+                    label="type"
+                    onChange={e => setMethodInfo(
+                      {...methodInfo, props: changeProps(methodInfo.props, `prop_${i}`, { type: e.target.value })}
+                    )}
+                  >
+                    <MenuItem value="any">any</MenuItem>
+                    <MenuItem value="number">number</MenuItem>
+                    <MenuItem value="string">string</MenuItem>
+                    <MenuItem value="object">object</MenuItem>
+                  </Select>
                 </div>
               </div>)
             }

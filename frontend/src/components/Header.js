@@ -98,8 +98,8 @@ export default function Header() {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Профіль</MenuItem>
+      <MenuItem onClick={handleMenuClose}>Вийти</MenuItem>
     </Menu>
   );
 
@@ -175,7 +175,7 @@ export default function Header() {
             sx={{ display: { xs: 'none', sm: 'block' } }}
           >
             <img src={logo} className="logo" />
-            MsBuilder
+            MsConstructor
           </Typography>
           <Search>
             <SearchIconWrapper>
@@ -188,7 +188,7 @@ export default function Header() {
           </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+            {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
                 <MailIcon />
               </Badge>
@@ -201,7 +201,7 @@ export default function Header() {
               <Badge badgeContent={17} color="error">
                 <NotificationsIcon />
               </Badge>
-            </IconButton>
+            </IconButton> */}
             <IconButton
               size="large"
               edge="end"

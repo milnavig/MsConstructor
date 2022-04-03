@@ -5,6 +5,7 @@ module.exports = function generateConfig(options) {
 
 module.exports = {
   namespace: ${namespace},
+  nodeID: "node-main",
 
   logger: ${options.logger.logger},
   logLevel: ${options.logger.logLevel},

@@ -10,9 +10,6 @@ const generateDockerCompose = require('./../logic/generateDockerCompose');
 const generateConfig = require('./../logic/generateConfig');
 const archiver = require('archiver');
 
-const JSZip = require('jszip');
-//const FileSaver = require('file-saver');
-//const zip = new JSZip();
 const path = require('path');
 
 class MicroserviceController {
@@ -106,7 +103,6 @@ function generateGateways(appName, model) {
 function generateDbFiles(appName, model) {
   //let rawdata = fs.readFileSync('./data/scheme.json');
   //let data = JSON.parse(rawdata);
-  //console.log(JSON.parse(data.main))
 
   const dbPath = path.join(__dirname, '../output' + appName + '/db');
   if (!fs.existsSync(dbPath)) {
@@ -144,6 +140,16 @@ function generateServices(appName, model) {
   microservices.forEach(ms => {
     let methods = {};
     let actions = {};
+
+    let hasDB = false;
+    let dbName;
+    model.linkDataArray.filter(n => n.relationship === 'db').forEach(l => {
+      if (ms.key === l.from) {
+        hasDB = true;
+        dbName = l.to;
+      }
+    });
+
     let nodes = microservicesData.nodeDataArray.filter(node => ms.key === node.group);
 
     nodes.forEach(n => {
@@ -171,7 +177,7 @@ function generateServices(appName, model) {
     let events = links.map(link => ({name: link.eventName}));
     let meta = ms.meta ? Object.entries(ms.meta).map(entry => ({name: entry[0], value: entry[1]})) : [];
 
-    const code = generateService(ms.key, Object.values(actions), Object.values(methods), meta, events);
+    const code = generateService(ms.key, Object.values(actions), Object.values(methods), hasDB, dbName, meta, events);
 
     fs.writeFileSync(`./output/${appName}/services/${ms.key}.service.js`, code);
     console.log(`Created ${ms.key}.js`);

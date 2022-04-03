@@ -70,7 +70,6 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
           flexWrap: "wrap",
         }}
       >
-        <input id="fileupload" type="file" style={{display: "none"}} name="fileupload" /> 
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={generateApp} color="success" startIcon={<PlayArrowIcon />}>
           Згенерувати програму
         </MuiButton>

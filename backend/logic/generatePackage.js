@@ -21,6 +21,7 @@ module.exports = function generatePackage() {
   "dependencies": {
     "moleculer": "^0.14.19",
     "moleculer-db": "^0.8.17",
+    "moleculer-repl": "^0.7.0",
     "moleculer-db-adapter-sequelize": "^0.2.13",
     "moleculer-web": "^0.10.4",
     "nats": "^2.6.0",

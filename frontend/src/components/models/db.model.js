@@ -39,7 +39,7 @@ export const dbModel = (go, {
           column: 1,
           margin: new go.Margin(0, 10),
           stretch: go.GraphObject.Horizontal,
-          font: "bold 13px sans-serif",
+          font: "bold 16px sans-serif",
           wrap: go.TextBlock.None,
           overflow: go.TextBlock.OverflowEllipsis,
           // and disallow drawing links from or to this text:
@@ -51,18 +51,20 @@ export const dbModel = (go, {
           column: 2,
           margin: new go.Margin(0, 10),
           stretch: go.GraphObject.Horizontal,
-          font: "13px sans-serif",
-          maxLines: 3,
+          font: "16px sans-serif",
+          maxLines: 1,
           overflow: go.TextBlock.OverflowEllipsis,
-          editable: true
+          editable: false
         },
         new go.Binding("text", "datatype").makeTwoWay()),
     );
 
   function makeWidthBinding(idx) {
     function getColumnWidth(arr) {
-      if (Array.isArray(arr) && idx < arr.length) return arr[idx];
-      return NaN;
+      if (idx === 0) return 20;
+      return 150;
+      //if (Array.isArray(arr) && idx < arr.length) return arr[idx];
+      //return NaN;
     }
     // This target-to-source conversion sets a number in the Array at the given index.
     function setColumnWidth(w, data) {
@@ -108,13 +110,13 @@ export const dbModel = (go, {
               margin: 3,
               stroke: "white",
               textAlign: "center",
-              font: "bold 12pt sans-serif"
+              font: "bold 16pt sans-serif"
             },
             new go.Binding("text", "key"))),
         $(go.Panel, "Table",
           {
             name: "TABLE", stretch: go.GraphObject.Horizontal,
-            minSize: new go.Size(100, 10),
+            minSize: new go.Size(200, 10),
             defaultAlignment: go.Spot.Left,
             defaultStretch: go.GraphObject.Horizontal,
             defaultColumnSeparatorStroke: "gray",
@@ -129,11 +131,21 @@ export const dbModel = (go, {
       ) 
     ); 
 
-  const selectArrow = (r) => {
+  const selectArrowFrom = (r) => {
     switch (r) {
       case "one-to-many": return "DoubleLine";
+      case "one-to-one": return "DoubleLine";
       case "many-to-many": return "BackwardLineFork";
       default: return "DoubleLine";
+    }
+  }
+
+  const selectArrowTo = (r) => {
+    switch (r) {
+      case "one-to-many": return "LineFork";
+      case "one-to-one": return "DoubleLine";
+      case "many-to-many": return "LineFork";
+      default: return "LineFork";
     }
   }
 
@@ -141,8 +153,8 @@ export const dbModel = (go, {
     $(go.Link,
       { relinkableFrom: true, relinkableTo: true, toShortLength: 4 },  // let user reconnect links
       $(go.Shape, { strokeWidth: 1.5 }),
-      $(go.Shape, { toArrow: "LineFork", scale: 1.5 }),
-      $(go.Shape, { scale: 1.5 }, new go.Binding("fromArrow", "relationship", selectArrow))
+      $(go.Shape, { scale: 1.5 }, new go.Binding("toArrow", "relationship", selectArrowTo)),
+      $(go.Shape, { scale: 1.5 }, new go.Binding("fromArrow", "relationship", selectArrowFrom))
     );
 
   const checkField = (linkData) => {
@@ -150,12 +162,21 @@ export const dbModel = (go, {
 
     // all model changes should happen in a transaction
     diagram.commit(function(d) {
-      const node = diagram.model.nodeDataArray.find((node) => node.key === linkData.from);
-      const field = node.fields.find((field) => field.name === linkData.fromPort);
-      if (field.type === "fk") return;
-      field.type = "fk";
+      const node_from = diagram.model.nodeDataArray.find((node) => node.key === linkData.from);
+      const node_to = diagram.model.nodeDataArray.find((node) => node.key === linkData.to);
+      const field_from = node_from.fields.find((field) => field.name === linkData.fromPort);
+      const field_to = node_to.fields.find((field) => field.name === linkData.toPort);
+      if (field_from.type === "fk" || field_from.type === "pk") {
+        if (field_to.type === "fk" || field_to.type === "pk") return;
+        else {
+          field_to.type = "fk";
+          diagram.findNodeForKey(node_to.key)?.updateTargetBindings();
+        }
+      } else {
+        field_from.type = "fk";
+        diagram.findNodeForKey(node_from.key)?.updateTargetBindings();
+      }
 
-      diagram.findNodeForKey(node.key)?.updateTargetBindings();
     }, "make field foreign key");
   }
 

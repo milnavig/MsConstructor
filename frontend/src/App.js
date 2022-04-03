@@ -5,7 +5,7 @@ import { MainComponent } from './components/main';
 // render function...
 function App() {
   return (
-    <div>
+    <div className="mainDiv">
       <MainComponent></MainComponent>
     </div>
   );

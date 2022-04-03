@@ -33,7 +33,7 @@ export function MicroservicesDiagram({
     event.preventDefault();
     const microserviceName = data.microservice;
     const methodName = data.name;
-    const props = data.props.map(prop => ({ name: prop.name, type: prop.type }));
+    const props = data.props.map(prop => ({ name: prop.name, type: prop.type ?? "any" }));
 
     setNodes({...nodes, [currentModel]: [...nodes[currentModel], {
       key: methodName, group: microserviceName, color: go.Brush.randomColor(), type: "method", parameters: props

@@ -31,8 +31,8 @@ ${services.map(s =>
     environment:
       SERVICES: ${s.name}
     depends_on:
-      - ${s.db_name}
       - nats
+      ${s.db_name ? `- ${s.db_name}` : ''}
     networks:
       - internal
       `).join('\n')}

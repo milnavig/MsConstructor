@@ -18,7 +18,7 @@ export function DbManagementBar({currentModel, addTable, selectRelationship, onC
     name: '',
     fields: [],
   });
-  const [toggle, setToggle] = useState(true);
+  const [toggle, setToggle] = useState(0);
 
   const showForm = (e) => {
     e.preventDefault();
@@ -79,20 +79,30 @@ export function DbManagementBar({currentModel, addTable, selectRelationship, onC
         </div>
         <ButtonGroup variant="outlined" sx={{margin: 1}} aria-label="outlined button group">
           <MuiButton
-            variant={toggle ? "contained" : "outlined"}
+            variant={toggle === 0 ? "contained" : "outlined"}
             color="primary"
             onClick={(e) => {
-              setToggle(!toggle);
+              setToggle(0);
               selectRelationship("one-to-many");
             }}
           >
             One-to-Many
           </MuiButton>
           <MuiButton
-            variant={!toggle ? "contained" : "outlined"}
+            variant={toggle === 1 ? "contained" : "outlined"}
             color="primary"
             onClick={(e) => {
-              setToggle(!toggle);
+              setToggle(1);
+              selectRelationship("one-to-one");
+            }}
+          >
+            One-to-One
+          </MuiButton>
+          <MuiButton
+            variant={toggle === 2 ? "contained" : "outlined"}
+            color="primary"
+            onClick={(e) => {
+              setToggle(2);
               selectRelationship("many-to-many");
             }}
           >
@@ -142,7 +152,7 @@ export function DbManagementBar({currentModel, addTable, selectRelationship, onC
                   <input className="form-check-input" name="unique" type="checkbox" checked={tableInfo[`field_${i}`]?.unique} onChange={
                     (e) => changeField(tableInfo.fields, `field_${i}`, { uniqueClicked: true })
                   } id={`unique_${i}`}></input>
-                  <label className="form-check-label" htmlFor={`unique_${i}`}>
+                  <label className="form-check-label" htmlFor={`unique_${i}`} style={{paddingLeft: "5px"}}>
                     UNIQUE
                   </label>
                 </div>
@@ -150,7 +160,7 @@ export function DbManagementBar({currentModel, addTable, selectRelationship, onC
                   <input className="form-check-input" name="not_null" type="checkbox" checked={tableInfo[`field_${i}`]?.not_null} onChange={
                     (e) => changeField(tableInfo.fields, `field_${i}`, { notNullClicked: true })
                   } id={`not_null_${i}`}></input>
-                  <label className="form-check-label" htmlFor={`not_null_${i}`}>
+                  <label className="form-check-label" htmlFor={`not_null_${i}`} style={{paddingLeft: "5px"}}>
                     NOT NULL
                   </label>
                 </div>
@@ -158,7 +168,7 @@ export function DbManagementBar({currentModel, addTable, selectRelationship, onC
                   <input className="form-check-input" name="pk" type="checkbox" checked={tableInfo[`field_${i}`]?.pk} onChange={
                     (e) => changeField(tableInfo.fields, `field_${i}`, { pkClicked: true })
                   } id={`pk_${i}`}></input>
-                  <label className="form-check-label" htmlFor={`pk_${i}`}>
+                  <label className="form-check-label" htmlFor={`pk_${i}`} style={{paddingLeft: "5px"}}>
                     Primary key (PK)
                   </label>
                 </div>

@@ -13,12 +13,15 @@ import { nodedata_basic, linkdata_basic } from './../assets/data';
 import test_data from './../assets/test_data.json';
 import { dbModel } from './models/db.model';
 
+import GreetingPage from './GreetingPage';
+
 const diagrams = new Map();
 
 export function MainComponent() {
   const [nodes, setNodes] = useState(nodedata_basic);
   const [links, setLinks] = useState(linkdata_basic);
   const [moleculerOptions, setMoleculerOptions] = useState({});
+  const [currentWindow, setCurrentWindow] = useState('greeting');
 
   let globalDiagram = useRef('');
 
@@ -192,6 +195,49 @@ export function MainComponent() {
     }
   }
 
+  function saveAppName(name) {
+    setMoleculerOptions({...moleculerOptions, name});
+  }
+
+  function generateApp() {
+    const scheme = {};
+    diagrams.forEach((d, key) => {
+      scheme[key] = d.model.toJson(); //JSON.stringify(d.model, null, 2);
+    });
+    scheme.options = moleculerOptions;
+
+    fetch("http://localhost:5000/api/create", {
+      method: 'POST',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(scheme)
+    }).then((res) => {
+      res.blob().then(blob => {
+        let file = new Blob([blob]);
+        if (window.navigator.msSaveOrOpenBlob) // IE10+
+          window.navigator.msSaveOrOpenBlob(file, `${moleculerOptions.name ?? 'app'}.zip`);
+        else { // Others
+          let a = document.createElement("a"),
+                  url = URL.createObjectURL(file);
+          a.href = url;
+          a.download = `${moleculerOptions.name ?? 'app'}.zip`;
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+          }, 0); 
+        }
+      });
+    });
+  }
+
+  useEffect(() => {
+    //console.log(diagrams.get('main').model.toJson());
+  });
+
   function renderDiagram(currentModel) {
     if (currentModel === 'main') {
       return (<MicroservicesDiagram 
@@ -216,66 +262,35 @@ export function MainComponent() {
     }
   }
 
-  function saveAppName(name) {
-    setMoleculerOptions({...moleculerOptions, name});
-  }
-
-  function generateApp() {
-    const scheme = {};
-    diagrams.forEach((d, key) => {
-      scheme[key] = d.model.toJson(); //JSON.stringify(d.model, null, 2);
-    });
-    scheme.options = moleculerOptions;
-
-    fetch("http://localhost:5000/api/create", {
-      method: 'POST',
-      cache: 'no-cache',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(scheme)
-    }).then((res) => {
-      res.blob().then(blob => {
-        let file = new Blob([blob]);
-        if (window.navigator.msSaveOrOpenBlob) // IE10+
-          window.navigator.msSaveOrOpenBlob(file, 'data.zip');
-        else { // Others
-          let a = document.createElement("a"),
-                  url = URL.createObjectURL(file);
-          a.href = url;
-          a.download = 'data.zip';
-          document.body.appendChild(a);
-          a.click();
-          setTimeout(function() {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);  
-          }, 0); 
-        }
-      });
-    });
-  }
-
-  useEffect(() => {
-    //console.log(diagrams.get('main').model.toJson());
-  });
-
   return (
-    <div>
-      <Header></Header>
-      <div className="main">
-        <MainMenu 
-          generateApp={generateApp}
-          saveSchemeHandler={saveSchemeHandler} 
-          moleculerOptions={moleculerOptions} 
-          setMoleculerOptions={setMoleculerOptions}
-          setTestScheme={setTestScheme}
-          openSchemeHandler={openSchemeHandler}
-          saveAppName={saveAppName}
-        ></MainMenu>
-        { 
-          renderDiagram(currentModel)
-        }
+    <>
+    <input id="fileupload" type="file" style={{display: "none"}} name="fileupload" /> 
+    {currentWindow === 'greeting' ? 
+      <GreetingPage 
+        setCurrentWindow={setCurrentWindow}
+        saveSchemeHandler={saveSchemeHandler} 
+        openSchemeHandler={openSchemeHandler}
+      ></GreetingPage> :
+      <div>
+        <Header></Header>
+        <div className='menuDiv'>
+          <MainMenu 
+            generateApp={generateApp}
+            saveSchemeHandler={saveSchemeHandler} 
+            moleculerOptions={moleculerOptions} 
+            setMoleculerOptions={setMoleculerOptions}
+            setTestScheme={setTestScheme}
+            openSchemeHandler={openSchemeHandler}
+            saveAppName={saveAppName}
+          ></MainMenu>
+        </div>
+        <div className="main">
+          { 
+            renderDiagram(currentModel)
+          }
+        </div>
       </div>
-    </div>
+    }
+    </>
   );
 }
