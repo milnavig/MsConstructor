@@ -1,13 +1,13 @@
 module.exports = function generateService(msName, actions, methods, hasDB, dbName, meta, events) {
   const version = 1;
   const fileData = 
-` ${hasDB ? `const DbService = require("moleculer-db");
+`${hasDB ? `const DbService = require("moleculer-db");
 const SqlAdapter = require("moleculer-db-adapter-sequelize");
 const Sequelize = require("sequelize");
 ` : null}
 module.exports = {
-  name: ${msName},
-  version: ${version},
+  name: "${msName}",
+  //version: ${version},
   //requestTimeout: 3000,
 
   ${hasDB ? `mixins: [DbService],` : null}

@@ -27,7 +27,7 @@ export function SettingsModal({isOpen, toggle, saveAppName}) {
           onClick={(e) => {
             e.preventDefault();
             saveAppName(appName);
-            setAppName("");
+            //setAppName("");
             toggle(false);
           }}
         >

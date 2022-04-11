@@ -92,18 +92,36 @@ const Root = styled('span')(
   `,
 );
 
-export function MsManagementBar({addMethod, setGatewayFrom, microserviceName, displayForm, setDisplayForm, arrowType, clear, setMicroserviceNameToggle}) {
+export function MsManagementBar({
+  addMethod, 
+  addVariable,
+  setGatewayFrom, 
+  microserviceName, 
+  displayForm, 
+  setDisplayForm, 
+  isVarFormDisplayed,
+  setVarFormDisplay,
+  arrowType, 
+  clear, 
+  setMicroserviceNameToggle
+}) {
   let [propsLength, setPropsLength] = useState(1);
+  let [varsLength, setVarsLength] = useState(1);
   const [methodInfo, setMethodInfo] = useState({
     microservice: microserviceName,
     name: "",
     props: [],
+  });
+  const [variableInfo, setVariableInfo] = useState({
+    microservice: microserviceName,
+    vars: {},
   });
 
   const [toggle, setToggle] = useState(true);
 
   useEffect(() => {
     setMethodInfo({...methodInfo, microservice: microserviceName});
+    setVariableInfo({...variableInfo, microservice: microserviceName});
   }, [microserviceName]);
 
   const addProps = (e) => {
@@ -111,10 +129,21 @@ export function MsManagementBar({addMethod, setGatewayFrom, microserviceName, di
     setPropsLength(++propsLength);
   };
 
+  const addVars = (e) => {
+    e.preventDefault();
+    setVarsLength(++varsLength);
+  };
+
   const removeProps = (i) => {
     methodInfo.props.splice(i, 1);
     setMethodInfo(methodInfo);
     setPropsLength(--propsLength);
+  }
+
+  const removeVars = (i) => {
+    variableInfo.vars.splice(i, 1);
+    setVariableInfo(variableInfo);
+    setVarsLength(--varsLength);
   }
 
   const changeProps = (props, id, changes) => {
@@ -261,6 +290,64 @@ export function MsManagementBar({addMethod, setGatewayFrom, microserviceName, di
                 props: [],
               });
               setPropsLength(1);
+            }}
+          >
+            Додати
+          </Button>
+        </ModalFooter>
+      </Modal>
+      <Modal
+        isOpen={isVarFormDisplayed}
+        onClosed={() => setVarFormDisplay(false)}
+        toggle={() => setVarFormDisplay(false)}
+      >
+        <ModalHeader toggle={() => setVarFormDisplay(false)}>
+          Додати властивість до мікросервісу
+        </ModalHeader>
+        <ModalBody>
+          <form className="form">
+            <label className="stretch">
+              Назва мікросервісу:
+              <Input defaultValue={microserviceName} type="text" name="ms_name" onChange={
+                e => setVariableInfo({...variableInfo, microservice: e.target.value})
+              } placeholder="Введіть назву мікросервісу..." />
+            </label>
+            { 
+              new Array(varsLength).fill(0).map((el, i) => <div className="item" key={`var_${i}`} >
+                <div className="removeButton">
+                  <button type="button" className="btn-close" aria-label="Delete" onClick={(e) => removeVars(i)}></button>
+                </div>
+                <label className="stretch">
+                  <Input value={variableInfo.vars[i] ?? ''} type="text" name="method_name" onInput={
+                    e => setVariableInfo({...variableInfo, vars: {...variableInfo.vars, [i]: e.target.value}})
+                  } placeholder="Введіть назву властивості..." />
+                </label>
+              </div>)
+            }
+            <Button
+              color="primary"
+              onClick={(e) => {
+                addVars(e);
+              }}
+              outline
+              size="sm"
+            >
+              Додати властивість
+            </Button>
+          </form>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            color="primary"
+            onClick={(e) => {
+              e.preventDefault();
+              addVariable(e, variableInfo);
+              setVarFormDisplay(false);
+              setVariableInfo({
+                microservice: microserviceName,
+                vars: {},
+              });
+              setVarsLength(1);
             }}
           >
             Додати

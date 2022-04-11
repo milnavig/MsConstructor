@@ -4,15 +4,15 @@ module.exports = function generateConfig(options) {
 `"use strict";
 
 module.exports = {
-  namespace: ${namespace},
+  namespace: "${namespace}",
   nodeID: "node-main",
 
-  logger: ${options.logger.logger},
-  logLevel: ${options.logger.logLevel},
-  logFormatter: ${options.logger.formatter},
+  logger: "${options.logger.logger}",
+  logLevel: "${options.logger.logLevel}",
+  logFormatter: "${options.logger.formatter}",
   logObjectPrinter: null,
 
-  transporter: ${options.broker.transporter},
+  transporter: "${options.broker.transporter}",
 
   requestTimeout: 5000,
   retryPolicy: {
@@ -38,13 +38,13 @@ module.exports = {
 
   registry: {
     discoverer: {
-      type: ${options.serviceDiscovery.discoverer},
+      type: "${options.serviceDiscovery.discoverer}",
       options: {
         heartbeatInterval: ${options.serviceDiscovery.heartbeatInterval},
         heartbeatTimeout: ${options.serviceDiscovery.heartbeatTimeout},
       }
     },
-    strategy: ${options.loadBalancer.strategy},
+    strategy: "${options.loadBalancer.strategy}",
     strategyOptions: {
       sampleCount: ${options.loadBalancer.sampleCount},
       lowCpuUsage: ${options.loadBalancer.lowCpuUsage},
@@ -82,7 +82,7 @@ module.exports = {
   errorHandler: null,
   
   cacher: "MemoryLRU",
-  serializer: ${options.broker.serializer},
+  serializer: "${options.broker.serializer}",
 
   validator: true,
   errorRegenerator: null,
@@ -90,14 +90,50 @@ module.exports = {
   metrics: {
     enabled: true,
     reporter: [
-      "Console"
+      {
+${options.metrics.metrics === "Console" ? 
+`        type: "Console",
+        options: {
+            // Printing interval in seconds
+            interval: ${options.metrics.interval},
+            // Custom logger.
+            logger: null,
+            // Using colors
+            colors: true,
+            // Prints only changed metrics, not the full list.
+            onlyChanges: ${options.metrics.onlyChanges}
+        }`
+        :
+`        type: "CSV",
+        options: {
+            // Folder of CSV files.
+            folder: "./reports/metrics",
+            // CSV field delimiter
+            delimiter: ",",
+            // CSV row delimiter
+            rowDelimiter: "\n",
+            // Saving mode. 
+            //   - "metric" - save metrics to individual files
+            //   - "label" - save metrics by labels to individual files
+            mode: "metric",
+            // Saved metrics types.
+            types: null,
+            // Saving interval in seconds
+            interval: ${options.metrics.interval},
+            // Custom filename formatter
+            filenameFormatter: null,
+            // Custom CSV row formatter.
+            rowFormatter: null,
+        }`
+        }
+      }
     ]
   },
 
   tracing: {
     enabled: ${options.tracing.enable},
     exporter: [
-      ${options.tracing.exporter},
+      "${options.tracing.exporter}",
     ]
   },
 

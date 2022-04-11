@@ -26,6 +26,7 @@ export function MainComponent() {
   let globalDiagram = useRef('');
 
   const [isFormDisplayed, setFormDisplay] = useState(false);
+  const [isVarFormDisplayed, setVarFormDisplay] = useState(false);
   const [metadataToggle, setMetadataToggle] = useState(false);
   const [eventToggle, setEventToggle] = useState(false);
   const [currentLink, setCurrentLink] = useState({});
@@ -34,7 +35,20 @@ export function MainComponent() {
   const [metadata, setMetadata] = useState({});
 
   const diagramData = {
-    nodes, setNodes, links, setLinks, isFormDisplayed, setFormDisplay, metadata, setMetadata, eventToggle, setEventToggle, currentLink, setCurrentLink,
+    nodes, 
+    setNodes, 
+    links, 
+    setLinks, 
+    isFormDisplayed, 
+    setFormDisplay, 
+    isVarFormDisplayed, 
+    setVarFormDisplay,
+    metadata, 
+    setMetadata, 
+    eventToggle, 
+    setEventToggle, 
+    currentLink, 
+    setCurrentLink,
   };
 
   const [, updateState] = useState();
@@ -44,9 +58,14 @@ export function MainComponent() {
   const dbRelationship = useRef('one-to-many');
   const microserviceName = useRef('');
 
-  const invokePopup = (msName) => {
+  const invokePopup = (msName, type) => {
     microserviceName.current = msName;
-    setFormDisplay(true);
+    if (type === "method") {
+      setFormDisplay(true);
+    };
+    if (type === "variable") {
+      setVarFormDisplay(true);
+    };
   }
 
   const data = {

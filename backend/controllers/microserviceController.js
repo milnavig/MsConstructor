@@ -96,7 +96,7 @@ function generateGateways(appName, model) {
   //console.log(gatewayData);
   const gtw = generateGateway(gatewayData);
 
-  fs.writeFileSync(`./output/${appName}/services/gateway.js`, gtw);
+  fs.writeFileSync(`./output/${appName}/services/gateway.service.js`, gtw);
   console.log(`Created gateway.js file!`);
 }
 
@@ -143,7 +143,7 @@ function generateServices(appName, model) {
 
     let hasDB = false;
     let dbName;
-    model.linkDataArray.filter(n => n.relationship === 'db').forEach(l => {
+    microservicesData.linkDataArray.filter(n => n.relationship === 'db').forEach(l => {
       if (ms.key === l.from) {
         hasDB = true;
         dbName = l.to;

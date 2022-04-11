@@ -4,6 +4,7 @@ module.exports = function generateGateway(endpoints) {
 `const HTTPServer = require("moleculer-web"); // API gateway
 
 module.exports = {
+  name: "gateway",
   mixins: [HTTPServer],
 
   settings: {
@@ -24,6 +25,7 @@ module.exports = {
     },
     
     routes: [{
+      path: "/public",
       aliases: {
 ${
 endpoints.map(endpoint => 

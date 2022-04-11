@@ -37,7 +37,6 @@ export const microservicesModel = (go, {
       new go.Binding("maxLocation", "type", (t) => t === "method" ? new go.Point(NaN, NaN) : null),
       $(go.Shape, "Rectangle",
         { fill: "#EEEEEE", stroke: null, strokeWidth: 0, width: 300 },
-        //new go.Binding("fill", "color")
       ),
       $(go.Panel, "Horizontal",
         { alignment: go.Spot.Left },
@@ -68,12 +67,28 @@ export const microservicesModel = (go, {
             }
             return s + ")";
           })),
-        // method return type, if any
-        /* $(go.TextBlock, "",
-          new go.Binding("text", "type", t => t ? ": " : "")),
+      ),
+    );
+
+  const vartemplate =
+    $(go.Node, "Auto",
+      { 
+        fromSpot: go.Spot.RightSide, toSpot: go.Spot.LeftSide,
+        //minLocation: new go.Point(NaN, NaN),  // disallow movement
+        //maxLocation: new go.Point(NaN, NaN) 
+      },
+      new go.Binding("minLocation", "type", (t) => t === "variable" ? new go.Point(NaN, NaN) : null),
+      new go.Binding("maxLocation", "type", (t) => t === "variable" ? new go.Point(NaN, NaN) : null),
+      $(go.Shape, "Rectangle",
+        { fill: "#b8c4db", stroke: null, strokeWidth: 0, width: 300 },
+      ),
+      $(go.Panel, "Horizontal",
+        { margin: 10 },
+        // method name, underlined if scope=="class" to indicate static method
         $(go.TextBlock,
           { isMultiline: false, editable: true },
-          new go.Binding("text", "type").makeTwoWay()) */
+          new go.Binding("text", "key").makeTwoWay(),
+        ),
       ),
     );
 
@@ -181,13 +196,20 @@ export const microservicesModel = (go, {
       //$(go.Shape, { scale: 1.3, fill: "white" },
       //  new go.Binding("fromArrow", "relationship", convertFromArrow)),
       $(go.Shape, { fill: "white" },
-        new go.Binding("toArrow", "relationship", convertToArrow))
+        new go.Binding("toArrow", "relationship", convertToArrow)),
+      $(go.TextBlock, { textAlign: "center", segmentOffset: new go.Point(0, -10),
+        segmentOrientation: go.Link.OrientUpright },  // centered multi-line text
+        new go.Binding("text", "eventName", (e) => e ?? ""))
     );
 
   function handleAddMethod(e, obj) {
     //setMicroserviceName(obj.part.data.key);
     //setShowForm(true);
-    invokePopup(obj.part.data.key);
+    invokePopup(obj.part.data.key, "method");
+  }
+
+  function handleAddVariable(e, obj) {
+    invokePopup(obj.part.data.key, "variable");
   }
 
   function handleAddDB(e, obj) {
@@ -236,6 +258,13 @@ export const microservicesModel = (go, {
               },
               $(go.TextBlock, {font: "16px sans-serif"}, "Додати метод"),
               { click: handleAddMethod }),
+            $("ContextMenuButton",
+              {
+                "ButtonBorder.fill": "white",
+                "_buttonFillOver": "skyblue"
+              },
+              $(go.TextBlock, {font: "16px sans-serif"}, "Додати властивість"),
+              { click: handleAddVariable }),
             $("ContextMenuButton",
               {
                 "ButtonBorder.fill": "white",
@@ -329,6 +358,7 @@ export const microservicesModel = (go, {
   const nodetemplmap = new go.Map();
   nodetemplmap.add("db", dbtemplate);
   nodetemplmap.add("api", apitemplate);
+  nodetemplmap.add("variable", vartemplate);
   nodetemplmap.add("", diagram.nodeTemplate);
 
   diagram.nodeTemplateMap = nodetemplmap;
@@ -368,17 +398,18 @@ export const microservicesModel = (go, {
     }
 
     if (link.data.relationship === "event") {
+      link.data.eventName = "";
       setEventToggle(true);
       setCurrentLink(link.data);
     }
 
     e.diagram.model.setCategoryForLinkData(link.data, link.data.relationship);
 
-    const tool = diagram.toolManager.linkingTool;
-    console.log(tool.archetypeLinkData);
+    //const tool = diagram.toolManager.linkingTool;
+    //console.log(tool.archetypeLinkData);
     // log model
-    var modelAsText = diagram.model.toJson();
-    console.log(modelAsText);
+    //var modelAsText = diagram.model.toJson();
+    //console.log(modelAsText);
   });
 
   diagram.grid.visible = true;

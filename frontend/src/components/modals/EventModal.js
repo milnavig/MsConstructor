@@ -7,8 +7,9 @@ export function EventModal({isOpen, toggle, diagram, currentLink}) {
 
   const saveEventName = () => {
     const link = diagram.current.findLinkForData(currentLink);
-    link.data.eventName = eventName;
-    console.log(link.data);
+    //link.data.eventName = eventName;
+    //diagram.current.requestUpdate();
+    diagram.current.model.setDataProperty(link.data, "eventName", eventName);
   };
 
   return (

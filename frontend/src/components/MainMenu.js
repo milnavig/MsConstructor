@@ -11,12 +11,14 @@ import BalanceIcon from '@mui/icons-material/Balance';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SchemaIcon from '@mui/icons-material/Schema';
+import DataUsageIcon from '@mui/icons-material/DataUsage';
 import { ServiceDiscoveryModal } from './modals/ServiceDiscoveryModal';
 import { LoadBalancerModal } from './modals/LoadBalancerModal';
 import { BrokerModal } from './modals/BrokerModal';
 import { LoggerModal } from './modals/LoggerModal';
 import { TracingModal } from './modals/TracingModal';
 import { SettingsModal } from './modals/SettingsModal';
+import { MetricsModal } from './modals/MetricsModal';
 
 export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptions, setTestScheme, openSchemeHandler, saveAppName, generateApp}) {
   const [displayBrokerForm, setDisplayBrokerForm] = useState(false);
@@ -25,6 +27,7 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
   const [displayBalancerForm, setDisplayBalancerForm] = useState(false);
   const [displayTracingForm, setDisplayTracingForm] = useState(false);
   const [displaySettingsForm, setDisplaySettingsForm] = useState(false);
+  const [displayMetricsForm, setDisplayMetricsForm] = useState(false);
   //const [moleculerOptions, setMoleculerOptions] = useState({});
 
   return (
@@ -64,6 +67,12 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
         toggle={() => setDisplaySettingsForm(false)}
         saveAppName={saveAppName}
       ></SettingsModal>
+      <MetricsModal
+        isOpen={displayMetricsForm} 
+        toggle={() => setDisplayMetricsForm(false)} 
+        moleculerOptions={moleculerOptions} 
+        setMoleculerOptions={setMoleculerOptions}
+      ></MetricsModal>
       <Box
         sx={{
           display: "flex",
@@ -96,6 +105,9 @@ export function MainMenu({saveSchemeHandler, moleculerOptions, setMoleculerOptio
         </MuiButton>
         <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={() => setDisplayTracingForm(true)} startIcon={<TimelineIcon />}>
           Відстеження
+        </MuiButton>
+        <MuiButton variant="outlined" sx={{margin: 1, borderRadius: "0px"}} onClick={() => setDisplayMetricsForm(true)} startIcon={<DataUsageIcon />}>
+          Метрики
         </MuiButton>
         <MuiButton variant="contained" color="success" sx={{margin: 1, borderRadius: "0px"}} onClick={() => setTestScheme()} startIcon={<SchemaIcon />}>
           Тестова схема

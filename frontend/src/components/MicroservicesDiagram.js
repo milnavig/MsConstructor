@@ -17,6 +17,8 @@ export function MicroservicesDiagram({
   arrowType,
   isFormDisplayed: displayForm, 
   setFormDisplay: setDisplayForm,
+  isVarFormDisplayed,
+  setVarFormDisplay,
   metadataToggle, 
   setMetadataToggle,
   metadata, 
@@ -42,12 +44,25 @@ export function MicroservicesDiagram({
       key: methodName, group: microserviceName, color: go.Brush.randomColor(), type: "method", parameters: props
     });
   }
+
+  function addVariable(event, data) {
+    event.preventDefault();
+    const microserviceName = data.microservice;
+    const variables = Object.values(data.vars).map(variable => ({ key: variable, group: microserviceName, category: "variable", type: "variable"}));
+
+    setNodes({...nodes, [currentModel]: [...nodes[currentModel], ...variables]});
+    variables.forEach(v => {
+      diagram.current.model.addNodeData(v);
+    });
+  }
+  
   /*
   function addMicroservice(e) {
     setNodes({...nodes, [currentModel]: [...nodes[currentModel], { key: 'microservice-45', type: "microservice", isGroup: true }]});
     diagram.current.model.addNodeData({ key: 'microservice-45', type: "microservice", isGroup: true });
   }
   */
+
   function saveMicroserviceName(name) {
     setNodes({...nodes, [currentModel]: [...nodes[currentModel], { key: name, type: "microservice", isGroup: true }]});
     diagram.current.model.addNodeData({ key: name, type: "microservice", isGroup: true });
@@ -101,11 +116,14 @@ export function MicroservicesDiagram({
       setCurrentLink={setCurrentLink}
     ></EventModal>
     <MsManagementBar 
-      addMethod={addMethod} 
+      addMethod={addMethod}
+      addVariable={addVariable} 
       arrowType={arrowType}
       microserviceName={microserviceName.current}
       displayForm={displayForm} 
       setDisplayForm={setDisplayForm}
+      isVarFormDisplayed={isVarFormDisplayed}
+      setVarFormDisplay={setVarFormDisplay}
       setGatewayFrom={() => setGatewayToggle(true)}
       setMicroserviceNameToggle={setMicroserviceNameToggle}
       clear={clear}
