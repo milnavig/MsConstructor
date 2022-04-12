@@ -8,6 +8,7 @@ const generateDockerignore = require('./../logic/generateDockerignore');
 const generateGateway = require('./../logic/generateGateway');
 const generateDockerCompose = require('./../logic/generateDockerCompose');
 const generateConfig = require('./../logic/generateConfig');
+const generateEnvFile = require('./../logic/generateEnvFile');
 const archiver = require('archiver');
 
 const path = require('path');
@@ -36,8 +37,12 @@ class MicroserviceController {
     generateConfigs(appName, model);
 
     generateGateways(appName, model);
+    
+    generateEnvFiles(appName);
 
     generateDockerComposeFiles(appName, model);
+
+    fs.writeFileSync(`./output/${appName}/docker-compose.env`, '');
 
     /* let data = zip.folder(appPath);
     data.generateAsync({type: "nodebuffer"}).then((content) => {
@@ -72,6 +77,11 @@ function zipDirectory(sourceDir, outPath) {
     stream.on('close', () => resolve());
     archive.finalize();
   });
+}
+
+function generateEnvFiles(appName) {
+  fs.writeFileSync(`./output/${appName}/.env`, generateEnvFile());
+  console.log(`Created .env file!`);
 }
 
 function generateDockerignores(appName) {

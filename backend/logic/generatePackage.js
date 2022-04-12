@@ -19,6 +19,7 @@ module.exports = function generatePackage() {
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.0",
     "moleculer": "^0.14.19",
     "moleculer-db": "^0.8.17",
     "moleculer-repl": "^0.7.0",

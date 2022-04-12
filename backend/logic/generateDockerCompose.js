@@ -37,7 +37,7 @@ ${services.map(s =>
       - internal
       `).join('\n')}
 
-${databases.map(db => 
+${databases.map((db, i) => 
 `  ${db.name}:
     image: postgres:10.5
     restart: always
@@ -52,7 +52,7 @@ ${databases.map(db =>
         max-size: 10m
         max-file: "3"
     ports:
-      - '5438:5432'
+      - '${5438 + i}:${5432 + i}'
     volumes: 
       - ./postgres-data:/var/lib/postgresql/data
       # copy the sql script to create tables
@@ -60,28 +60,6 @@ ${databases.map(db =>
     networks:
       - internal
 `).join('\n')}
-    
-  postgres:
-    image: postgres:10.5
-    restart: always
-    environment:
-      - POSTGRES_USER=${'postgres'}
-      - POSTGRES_PASSWORD=${'postgres'}
-      - APP_DB_USER=${'postgres'}
-      - APP_DB_PASS=${'postgres'}
-      - APP_DB_NAME=${'medicalapp'}
-    logging:
-      options:
-        max-size: 10m
-        max-file: "3"
-    ports:
-      - '5438:5432'
-    volumes: 
-      - ./postgres-data:/var/lib/postgresql/data
-      # copy the sql script to create tables
-      - ./sql/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
-    networks:
-      - internal
 
   nats:
     image: nats:2

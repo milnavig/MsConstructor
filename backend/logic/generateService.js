@@ -4,6 +4,7 @@ module.exports = function generateService(msName, actions, methods, hasDB, dbNam
 `${hasDB ? `const DbService = require("moleculer-db");
 const SqlAdapter = require("moleculer-db-adapter-sequelize");
 const Sequelize = require("sequelize");
+require('dotenv').config();
 ` : null}
 module.exports = {
   name: "${msName}",
@@ -22,8 +23,8 @@ meta.map(m =>
 }
   },
 ${hasDB ? `
-  adapter: new SqlAdapter(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
-    host: process.env.DB_HOST,
+  adapter: new SqlAdapter(${`"${dbName}"`}, process.env.DB_USER, process.env.DB_PASSWORD, {
+    host: ${`"${dbName}"`},
     dialect: 'postgres', //'mysql'|'sqlite'|'postgres'|'mssql'
 
     pool: {
@@ -75,7 +76,7 @@ ${
 ${action.parameters.map(parameter => 
 `        "${parameter.name}": "${parameter.type}",`).join('\n')}
       },
-      handler(ctx) {
+      async handler(ctx) {
         console.log('${msName}.${action.name} was called');
 ${
           action.calls.map(c => c.type === 'balanced_event' ?
@@ -102,7 +103,7 @@ ${
         ${method.parameters.map(parameter => 
 `         "${parameter.name}": "${parameter.type}",`).join('\n')}
       },
-      handler(ctx) {
+      async handler(ctx) {
         console.log('${msName}.${method.name} was called');
         return '${msName}.${method.name} was called';
       }
