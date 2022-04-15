@@ -9,6 +9,7 @@ const generateGateway = require('./../logic/generateGateway');
 const generateDockerCompose = require('./../logic/generateDockerCompose');
 const generateConfig = require('./../logic/generateConfig');
 const generateEnvFile = require('./../logic/generateEnvFile');
+const generateDockerfileDB = require('./../logic/generateDockerfileDB');
 const archiver = require('archiver');
 
 const path = require('path');
@@ -134,7 +135,15 @@ function generateDbFiles(appName, model) {
       }));
       const sql = generateDB(tables);
 
-      fs.writeFileSync(`./output/${appName}/db/${key}.sql`, sql);
+      const folderPath = path.join(__dirname, '../output' + appName + '/db/' + key);
+      if (!fs.existsSync(folderPath)) {
+        fs.mkdirSync(folderPath);
+      }
+
+      fs.writeFileSync(`./output/${appName}/db/${key}/script.sql`, sql);
+      const dockerfile = generateDockerfileDB(key);
+
+      fs.writeFileSync(`./output/${appName}/db/${key}/Dockerfile`, dockerfile);
       console.log(`Created ${key}.sql file!`);
     }
   }

@@ -41,24 +41,14 @@ ${services.map(s =>
 
 ${databases.map((db, i) => 
 `  ${db.name}:
-    image: postgres:10.5
-    restart: always
-    environment:
-      - POSTGRES_USER=${'postgres'}
-      - POSTGRES_PASSWORD=${'postgres'}
-      - APP_DB_USER=${'postgres'}
-      - APP_DB_PASS=${'postgres'}
-      - APP_DB_NAME=${db.name}
-    logging:
-      options:
-        max-size: 10m
-        max-file: "3"
+    build: ./db/${db.name}
+    image: postgres
     ports:
-      - '${5438 + i}:${5432 + i}'
-    volumes: 
-      - ./postgres-data:/var/lib/postgresql/data
-      # copy the sql script to create tables
-      - ./db/${db.name}.sql:/docker-entrypoint-initdb.d/create_tables.sql
+      - '${5438 + i}:${5432}'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=${db.name}
     networks:
       - internal
 `).join('\n')}

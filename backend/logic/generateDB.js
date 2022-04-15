@@ -15,12 +15,15 @@ ALTER TABLE public.${t.name} OWNER TO postgres;
     
 ${t.pk !== undefined ? `ALTER TABLE ONLY public.${t.name}
   ADD CONSTRAINT ${t.name}_pkey PRIMARY KEY (${t.pk});` : ''}
-${
-  t.fk_array.map(fk => 
+`).join('\n')
+}
+
+${tables.map(t => t.fk_array.map((fk, i) => 
 `ALTER TABLE ONLY public.${t.name}
-  ADD CONSTRAINT ${t.name}_pkey FOREIGN KEY (${fk.name}) REFERENCES public.${fk.table}(${fk.field});
-`).join('\n')}`).join('\n')
-}`;
+  ADD CONSTRAINT ${t.name}_fkey_${i} FOREIGN KEY (${fk.name}) REFERENCES public.${fk.table}(${fk.field});
+`).join('\n')).join('\n')
+}
+`;
 
   return db;
 }

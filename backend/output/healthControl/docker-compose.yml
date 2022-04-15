@@ -1,0 +1,125 @@
+version: "3.3"
+
+services:
+  api:
+    build:
+      context: .
+    image: microservices
+    env_file: docker-compose.env
+    environment:
+      SERVICES: api
+      PORT: 3000
+    depends_on:
+      - nats
+    ports:
+      - 5000:3000
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-gw.rule=PathPrefix(/)"
+      - "traefik.http.services.api-gw.loadbalancer.server.port=3000"
+    networks:
+      - internal
+
+  PatientService:
+    build:
+      context: .
+    image: microservices
+    env_file: docker-compose.env
+    environment:
+      SERVICES: PatientService
+    depends_on:
+      - nats
+      - PatientService_db
+    networks:
+      - internal
+      
+  SensorService:
+    build:
+      context: .
+    image: microservices
+    env_file: docker-compose.env
+    environment:
+      SERVICES: SensorService
+    depends_on:
+      - nats
+      - SensorService_db
+    networks:
+      - internal
+      
+  DoctorService:
+    build:
+      context: .
+    image: microservices
+    env_file: docker-compose.env
+    environment:
+      SERVICES: DoctorService
+    depends_on:
+      - nats
+      - DoctorService_db
+    networks:
+      - internal
+      
+
+  PatientService_db:
+    build: ./db/PatientService_db
+    image: postgres
+    ports:
+      - '5438:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=PatientService_db
+    networks:
+      - internal
+
+  SensorService_db:
+    build: ./db/SensorService_db
+    image: postgres
+    ports:
+      - '5439:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=SensorService_db
+    networks:
+      - internal
+
+  DoctorService_db:
+    build: ./db/DoctorService_db
+    image: postgres
+    ports:
+      - '5440:5432'
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=DoctorService_db
+    networks:
+      - internal
+
+
+  nats:
+    image: nats:2
+    networks:
+      - internal
+
+  traefik:
+    image: traefik:v2.1
+    command:
+      - "--api.insecure=true" # Don't do that in production!
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - 3000:80
+      - 3001:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internal
+      - default
+
+networks:
+  internal:
+
+volumes:
+  data: 
+  
