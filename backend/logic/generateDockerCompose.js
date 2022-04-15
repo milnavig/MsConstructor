@@ -10,10 +10,12 @@ ${ isGateway ?
     image: microservices
     env_file: docker-compose.env
     environment:
-      SERVICES: gateway
+      SERVICES: api
       PORT: 3000
     depends_on:
       - nats
+    ports:
+      - 5000:3000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api-gw.rule=PathPrefix(${`/`})"

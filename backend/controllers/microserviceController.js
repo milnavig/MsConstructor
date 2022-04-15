@@ -41,8 +41,12 @@ class MicroserviceController {
     generateEnvFiles(appName);
 
     generateDockerComposeFiles(appName, model);
+	
+	const envData = "SERVICEDIR=services\n" +
+		"TRANSPORTER=nats://nats:4222\n" +
+		"CACHER=Memory";
 
-    fs.writeFileSync(`./output/${appName}/docker-compose.env`, '');
+    fs.writeFileSync(`./output/${appName}/docker-compose.env`, envData);
 
     /* let data = zip.folder(appPath);
     data.generateAsync({type: "nodebuffer"}).then((content) => {
@@ -106,8 +110,8 @@ function generateGateways(appName, model) {
   //console.log(gatewayData);
   const gtw = generateGateway(gatewayData);
 
-  fs.writeFileSync(`./output/${appName}/services/gateway.service.js`, gtw);
-  console.log(`Created gateway.js file!`);
+  fs.writeFileSync(`./output/${appName}/services/api.service.js`, gtw);
+  console.log(`Created api.js file!`);
 }
 
 function generateDbFiles(appName, model) {

@@ -4,10 +4,15 @@ module.exports = function generateGateway(endpoints) {
 `const HTTPServer = require("moleculer-web"); // API gateway
 
 module.exports = {
-  name: "gateway",
+  name: "api",
   mixins: [HTTPServer],
 
   settings: {
+	// Exposed port
+	port: 3000,
+
+	// Exposed IP
+	ip: "0.0.0.0",
     // Global CORS settings for all routes
     cors: {
       // Configures the Access-Control-Allow-Origin CORS header.
