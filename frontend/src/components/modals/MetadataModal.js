@@ -25,7 +25,6 @@ export function MetadataModal({isOpen, toggle, diagram, microserviceName, metada
       const value = metadata[microserviceName][key].value;
       microservice.meta[name] = value;
     }
-    console.log(metadata)
     toggle(false);
   }
 

@@ -1,5 +1,5 @@
 
-module.exports = function generateGateway(endpoints) {
+module.exports = function generateGateway(endpoints, isAuthorize, isAuthenticate) {
   const API_gateway = 
 `const HTTPServer = require("moleculer-web"); // API gateway
 
@@ -8,11 +8,11 @@ module.exports = {
   mixins: [HTTPServer],
 
   settings: {
-	// Exposed port
-	port: 3000,
+    // Exposed port
+    port: 3000,
 
-	// Exposed IP
-	ip: "0.0.0.0",
+    // Exposed IP
+    ip: "0.0.0.0",
     // Global CORS settings for all routes
     cors: {
       // Configures the Access-Control-Allow-Origin CORS header.
@@ -31,13 +31,24 @@ module.exports = {
     
     routes: [{
       path: "/public",
+      authorization: ${isAuthorize ? "true" : "false"},
+      authentication: ${isAuthenticate ? "true" : "false"},
       aliases: {
 ${
 endpoints.map(endpoint => 
 `        "${endpoint.http_method} ${endpoint.url}": "${endpoint.microservice}.${endpoint.method}",`).join('\n')
 }
       }
-    }]
+    }],
+
+    methods: {
+      authorize(ctx, route, req, res) {
+        // implement authorization
+      },
+      authenticate(ctx, route, req, res) {
+        // implement authentication
+      }
+    }
   }
 }
   `;

@@ -28,11 +28,13 @@ export function MainComponent() {
   const [isFormDisplayed, setFormDisplay] = useState(false);
   const [isVarFormDisplayed, setVarFormDisplay] = useState(false);
   const [metadataToggle, setMetadataToggle] = useState(false);
+  const [instancesToggle, setInstancesToggle] = useState(false);
   const [eventToggle, setEventToggle] = useState(false);
   const [currentLink, setCurrentLink] = useState({});
 
   const [currentModel, setCurrentModel] = useState('main');
   const [metadata, setMetadata] = useState({});
+  const [instances, setInstances] = useState({});
 
   const diagramData = {
     nodes, 
@@ -44,7 +46,9 @@ export function MainComponent() {
     isVarFormDisplayed, 
     setVarFormDisplay,
     metadata, 
-    setMetadata, 
+    setMetadata,
+    instances,
+    setInstances,
     eventToggle, 
     setEventToggle, 
     currentLink, 
@@ -84,6 +88,7 @@ export function MainComponent() {
     dbRelationship,
     invokePopup,
     openMetadata,
+    openInstances,
     eventToggle, 
     setEventToggle,
     currentLink, 
@@ -143,6 +148,12 @@ export function MainComponent() {
 
   function openMetadata(msName) {
     setMetadataToggle(true);
+    microserviceName.current = msName;
+    forceUpdate();
+  }
+
+  function openInstances(msName) {
+    setInstancesToggle(true);
     microserviceName.current = msName;
     forceUpdate();
   }
@@ -266,7 +277,10 @@ export function MainComponent() {
         arrowType={arrowType}
         metadataToggle={metadataToggle} 
         setMetadataToggle={() => setMetadataToggle(false)}
+        instancesToggle={instancesToggle} 
+        setInstancesToggle={() => setInstancesToggle(false)}
         init={() => init(currentModel)}
+        moleculerOptions={moleculerOptions}
         { ...diagramData }
       />);
     } else {

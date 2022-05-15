@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Button, Modal, ModalBody, ModalHeader, ModalFooter } from 'reactstrap';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -7,7 +9,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 import Select from '@mui/material/Select';
 
-export function GatewayModal({isOpen, toggle, handleAddGateway}) {
+export function GatewayModal({isOpen, toggle, diagram, handleAddGateway, moleculerOptions}) {
   let [endpointsLength, setEndpointsLength] = useState(1);
   const [gatewayData, setGatewayData] = useState([]);
 
@@ -27,8 +29,13 @@ export function GatewayModal({isOpen, toggle, handleAddGateway}) {
     setEndpointsLength(--endpointsLength);
   }
 
+  const [authentication, setAuthentication] = useState(false);
+  const [authorization, setAuthorization] = useState(false);
+
   const addGateway = () => {
     handleAddGateway(gatewayData);
+    moleculerOptions.authentification = authentication;
+    moleculerOptions.authorization = authorization;
   }
 
   return (
@@ -79,6 +86,24 @@ export function GatewayModal({isOpen, toggle, handleAddGateway}) {
                     setGatewayData([...gatewayData]);
                   }}
                 />
+              </FormControl>
+            </div>
+            <div>
+              <FormControl sx={{ m: 1, width: 300 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox checked={authorization} onChange={(e) => setAuthorization(!authorization)} name="authorization" />
+                }
+                label="Aвторизація"
+              />
+              </FormControl>
+              <FormControl sx={{ m: 1, width: 300 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox checked={authentication} onChange={(e) => setAuthentication(!authentication)} name="authentification" />
+                }
+                label="Автентифікація"
+              />
               </FormControl>
             </div>
           </div>)

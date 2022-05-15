@@ -132,7 +132,7 @@ export function BrokerModal({isOpen, toggle, moleculerOptions, setMoleculerOptio
         toggle={toggle}
       >
         <ModalHeader toggle={toggle}>
-          Налаштування брокеру
+          Налаштування брокеру сервісів
         </ModalHeader>
         <ModalBody>
           <FormControl sx={{ m: 1, width: 300 }}>

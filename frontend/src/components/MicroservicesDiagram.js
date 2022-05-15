@@ -6,6 +6,7 @@ import { MsManagementBar } from './MsManagementBar';
 import { GatewayModal } from './modals/GatewayModal';
 import { EventModal } from './modals/EventModal';
 import { MicroservicesModal } from './modals/MicroservicesModal';
+import { InstancesModal } from './modals/InstancesModal';
 
 export function MicroservicesDiagram({
   diagram, 
@@ -21,12 +22,17 @@ export function MicroservicesDiagram({
   setVarFormDisplay,
   metadataToggle, 
   setMetadataToggle,
+  instancesToggle,
+  setInstancesToggle,
   metadata, 
   setMetadata,
+  instances,
+  setInstances,
   eventToggle, 
   setEventToggle,
   currentLink, 
   setCurrentLink,
+  moleculerOptions,
 }) {
   const [gatewayToggle, setGatewayToggle] = useState(false);
   const [microserviceNameToggle, setMicroserviceNameToggle] = useState(false);
@@ -106,7 +112,9 @@ export function MicroservicesDiagram({
     <GatewayModal 
       isOpen={gatewayToggle} 
       toggle={() => setGatewayToggle(false)}
+      diagram={diagram}
       handleAddGateway={handleAddGateway}
+      moleculerOptions={moleculerOptions}
     ></GatewayModal>
     <EventModal
       isOpen={eventToggle} 
@@ -136,6 +144,14 @@ export function MicroservicesDiagram({
       metadata={metadata}
       setMetadata={setMetadata}
     ></MetadataModal>
+    <InstancesModal
+      diagram={diagram}
+      isOpen={instancesToggle}
+      toggle={setInstancesToggle}
+      microserviceName={microserviceName.current}
+      instances={instances}
+      setInstances={setInstances}
+    ></InstancesModal>
     <ReactDiagram
       initDiagram={init}
       divClassName='diagram-component'

@@ -109,7 +109,7 @@ function generateGateways(appName, model) {
     d.method = endpoints.to;
   });
   //console.log(gatewayData);
-  const gtw = generateGateway(gatewayData);
+  const gtw = generateGateway(gatewayData, model.options.authorization, model.options.authentification);
 
   fs.writeFileSync(`./output/${appName}/services/api.service.js`, gtw);
   console.log(`Created api.js file!`);
@@ -226,7 +226,7 @@ function generateDockerComposeFiles(appName, model) {
   const isGateway = JSON.parse(model['main']).nodeDataArray.filter(n => n.group === 'gateway') ? true : false;
 
   const main_scheme = JSON.parse(model["main"]);
-  const services = main_scheme.nodeDataArray.filter(n => n.type === 'microservice').map(ms => ({name: ms.key}));
+  const services = main_scheme.nodeDataArray.filter(n => n.type === 'microservice').map(ms => ({name: ms.key, instances: ms.instances ?? 1}));
   const dbs = main_scheme.nodeDataArray.filter(n => n.type === 'db').map(ms => ({name: ms.key}));
   main_scheme.linkDataArray.filter(n => n.relationship === 'db').forEach(l => {
     const service = services.find(s => s.name === l.from);

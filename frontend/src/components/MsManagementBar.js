@@ -190,7 +190,7 @@ export function MsManagementBar({
             <MuiButton variant={!toggle ? "contained" : "outlined"} onClick={(e) => {
               arrowType.current = 'rpc';
               setToggle(!toggle);
-            }}>Sync RPC</MuiButton>
+            }}>Async RPC</MuiButton>
           </ButtonGroup>
           {
             //<div className="connection">

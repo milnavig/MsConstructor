@@ -14,6 +14,7 @@ export const microservicesModel = (go, {
   dbRelationship,
   invokePopup,
   openMetadata,
+  openInstances,
   setEventToggle,
   setCurrentLink,
 }) => {
@@ -232,6 +233,11 @@ export const microservicesModel = (go, {
     openMetadata(microservice);
   }
 
+  function handleInstancesNum(e, obj) {
+    const microservice = obj.part.data.key;
+    openInstances(microservice);
+  }
+
   function displayScheme(e, obj) {
     let diagram = diagrams.get(obj.part.data.key);
     if (!diagram) {
@@ -278,7 +284,14 @@ export const microservicesModel = (go, {
                 "_buttonFillOver": "skyblue"
               },
               $(go.TextBlock, {font: "16px sans-serif"}, "Додати метадані"),
-              { click: handleAddMetadata })
+              { click: handleAddMetadata }),
+            $("ContextMenuButton",
+              {
+                "ButtonBorder.fill": "white",
+                "_buttonFillOver": "skyblue"
+              },
+              $(go.TextBlock, {font: "16px sans-serif"}, "Кількість екземплярів"),
+              { click: handleInstancesNum })
           ),  // end Adornment
         // the group begins unexpanded;
         // upon expansion, a Diagram Listener will generate contents for the group

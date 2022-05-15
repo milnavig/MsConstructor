@@ -24,8 +24,8 @@ ${ isGateway ?
       - internal` : null
 }
 
-${services.map(s => 
-`  ${s.name}:
+${services.map(s => {
+  return new Array(Number(s.instances)).fill(0).map((inst, id) => `  ${s.name + '_' + id}:
     build:
       context: .
     image: microservices
@@ -37,7 +37,8 @@ ${services.map(s =>
       ${s.db_name ? `- ${s.db_name}` : ''}
     networks:
       - internal
-      `).join('\n')}
+      `).join('\n');
+  }).join('\n')}
 
 ${databases.map((db, i) => 
 `  ${db.name}:
