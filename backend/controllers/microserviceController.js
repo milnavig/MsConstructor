@@ -29,7 +29,7 @@ class MicroserviceController {
 
     generateBatFiles(appName);
 
-    generatePackages(appName);
+    generatePackages(appName, model);
 
     generateDockerfiles(appName);
 
@@ -43,9 +43,19 @@ class MicroserviceController {
 
     generateDockerComposeFiles(appName, model);
 	
-	const envData = "SERVICEDIR=services\n" +
-		"TRANSPORTER=nats://nats:4222\n" +
-		"CACHER=Memory";
+    let transporter = "TRANSPORTER=nats://nats:4222\n";
+    if (model.options.broker.transporter === "Redis") transporter = "TRANSPORTER=redis://redis-server:6379\n";
+    if (model.options.broker.transporter === "MQTT") transporter = "TRANSPORTER=mqtt://mqtt-server:1883\n";
+    if (model.options.broker.transporter === "AMPQ (0.9)" || model.options.broker.transporter === "AMPQ (1.0)") transporter = "TRANSPORTER=amqp://rabbitmq-server:5672\n";
+    if (model.options.broker.transporter === "NATS Streaming (STAN)") transporter = "TRANSPORTER=stan://nats-streaming-server:4222\n";
+    if (model.options.broker.transporter === "Kafka") transporter = "TRANSPORTER=kafka://192.168.51.29:2181\n";
+    let balancer = '\n';
+    if (model.options.serviceDiscovery.discoverer === "Redis") balancer = "BALANCER=redis://redis-server:6379\n";
+    if (model.options.serviceDiscovery.discoverer === "etcd3") balancer = "BALANCER=etcd3://etcd-server:2379\n";
+	  const envData = "SERVICEDIR=services\n" +
+      transporter +
+      balancer +
+      "CACHER=Memory";
 
     fs.writeFileSync(`./output/${appName}/docker-compose.env`, envData);
 
@@ -54,6 +64,16 @@ class MicroserviceController {
       fs.writeFileSync(`./output/${appName}/app.zip`, content);
       console.log(`Created archive`);
     }); */
+
+    if (model.options.broker.transporter === "MQTT") {
+      const mosquittoPath = path.join(__dirname, '../output' + appName + '/mosquitto');
+      if (!fs.existsSync(mosquittoPath)) {
+        fs.mkdirSync(mosquittoPath);
+      }
+      const mqttEnv = "allow_anonymous true\n" + "listener 1883";
+
+      fs.writeFileSync(`./output/${appName}/mosquitto/mosquitto.conf`, mqttEnv);
+    }
 
     const resPath = `./output/${appName}/app.zip`;
 
@@ -178,9 +198,13 @@ function generateServices(appName, model) {
     nodes.forEach(n => {
       microservicesData.linkDataArray.forEach(l => {
         if (n.key === l.from || n.key === l.to) {
-          actions[n.key] = {name: n.key, parameters: n.parameters, calls: []};
+          actions[n.key] = {name: n.key, parameters: n.parameters, calls: [], events: []};
           microservicesData.linkDataArray.filter(l => l.from === n.key).forEach(l => {
-            actions[n.key].calls.push({type: "balanced_event", microservice: l.toPort.replace('_in', ''), action: l.to});
+            if (l.relationship === "event") {
+              actions[n.key].events.push({type: "event", microservice: l.toPort.replace('_in', ''), event_name: l.eventName});
+            } else if (l.relationship === "rpc") {
+              actions[n.key].calls.push({type: "rpc", microservice: l.toPort.replace('_in', ''), action: l.to});
+            }
           });
         }
       })
@@ -212,8 +236,8 @@ function generateBatFiles(appName) {
   console.log('Created bat file!');
 }
 
-function generatePackages(appName) {
-  fs.writeFileSync(`./output/${appName}/package.json`, generatePackage());
+function generatePackages(appName, model) {
+  fs.writeFileSync(`./output/${appName}/package.json`, generatePackage(model.options));
   console.log('Created package.json file!');
 }
 
@@ -233,7 +257,7 @@ function generateDockerComposeFiles(appName, model) {
     service.db_name = l.to;
   });
 
-  fs.writeFileSync(`./output/${appName}/docker-compose.yml`, generateDockerCompose(isGateway, services, dbs));
+  fs.writeFileSync(`./output/${appName}/docker-compose.yml`, generateDockerCompose(isGateway, services, dbs, model.options));
   console.log('Created docker-compose.yml!');
 }
 

@@ -5,13 +5,13 @@ module.exports = function generateService(msName, actions, methods, hasDB, dbNam
 const SqlAdapter = require("moleculer-db-adapter-sequelize");
 const Sequelize = require("sequelize");
 require('dotenv').config();
-` : null}
+` : ''}
 module.exports = {
   name: "${msName}",
   //version: ${version},
   //requestTimeout: 3000,
 
-  ${hasDB ? `mixins: [DbService],` : null}
+  ${hasDB ? `mixins: [DbService],` : ''}
   settings: {
     //port: 8080,
   },
@@ -36,20 +36,7 @@ ${hasDB ? `
     noSync: true // If true, the model will not be synced by Sequelize
   }),
   model: {
-    /* name: "patients",
-    define: {
-      id: { 
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-      },
-      //name: Sequelize.STRING,
-      //surname: Sequelize.STRING,
-      age: Sequelize.INTEGER,
-      //status: Sequelize.BOOLEAN
-    },
-    options: {
-      // Options from http://docs.sequelizejs.com/manual/tutorial/models-definition.html
-    } */
+    
   },
 
   afterConnected() {
@@ -66,7 +53,7 @@ ${hasDB ? `
 
   entityRemoved(json, ctx) {
     this.logger.info("Entity removed", json);
-  },` : null}
+  },` : ''}
 
   actions: {
 ${
@@ -79,14 +66,14 @@ ${action.parameters.map(parameter =>
       async handler(ctx) {
         console.log('${msName}.${action.name} was called');
 ${
-          action.calls.map(c => c.type === 'balanced_event' ?
+          action.calls.map(c => 
 `        await ctx.call("${c.microservice}.${c.action}", {}, { meta: {
 
-        }});` 
-            :
-`        await ctx.broadcast("${c.microservice}.${c.action}", {}, { meta: {
-
-        }});`)
+        }});`).join('\n')
+}
+${
+          action.events.map(e => 
+`        ctx.emit("${e.event_name}", {});`).join('\n')
 }
         return '${msName}.${action.name} was called';
       }

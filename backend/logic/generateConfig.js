@@ -12,7 +12,10 @@ module.exports = {
   logFormatter: "${options.logger.formatter}",
   logObjectPrinter: null,
 
-  transporter: "${options.broker.transporter}",
+  transporter: "${options.broker.transporter === "Redis" ? "redis://redis-server:6379" : 
+  options.broker.transporter === "MQTT" ? "mqtt://mqtt-server:1883" : 
+  options.broker.transporter === "AMPQ (1.0)" || options.broker.transporter === "AMPQ (0.9)" ? "amqp://rabbitmq-server:5672" :
+  options.broker.transporter === "NATS Streaming (STAN)" ? "stan://nats-streaming-server:4222" : options.broker.transporter}",
 
   requestTimeout: 5000,
   retryPolicy: {
@@ -40,6 +43,13 @@ module.exports = {
     discoverer: {
       type: "${options.serviceDiscovery.discoverer}",
       options: {
+        ${options.serviceDiscovery.discoverer === "Redis" ? `
+        redis: {
+          port: 6379,
+          host: "redis-server",
+          password: "redis",
+          db: 1
+        },` : ''}
         heartbeatInterval: ${options.serviceDiscovery.heartbeatInterval},
         heartbeatTimeout: ${options.serviceDiscovery.heartbeatTimeout},
       }
@@ -94,36 +104,36 @@ module.exports = {
 ${options.metrics.metrics === "Console" ? 
 `        type: "Console",
         options: {
-            // Printing interval in seconds
-            interval: ${options.metrics.interval},
-            // Custom logger.
-            logger: null,
-            // Using colors
-            colors: true,
-            // Prints only changed metrics, not the full list.
-            onlyChanges: ${options.metrics.onlyChanges}
+          // Printing interval in seconds
+          interval: ${options.metrics.interval},
+          // Custom logger.
+          logger: null,
+          // Using colors
+          colors: true,
+          // Prints only changed metrics, not the full list.
+          onlyChanges: ${options.metrics.onlyChanges}
         }`
         :
 `        type: "CSV",
         options: {
-            // Folder of CSV files.
-            folder: "./reports/metrics",
-            // CSV field delimiter
-            delimiter: ",",
-            // CSV row delimiter
-            rowDelimiter: "\n",
-            // Saving mode. 
-            //   - "metric" - save metrics to individual files
-            //   - "label" - save metrics by labels to individual files
-            mode: "metric",
-            // Saved metrics types.
-            types: null,
-            // Saving interval in seconds
-            interval: ${options.metrics.interval},
-            // Custom filename formatter
-            filenameFormatter: null,
-            // Custom CSV row formatter.
-            rowFormatter: null,
+          // Folder of CSV files.
+          folder: "./reports/metrics",
+          // CSV field delimiter
+          delimiter: ",",
+          // CSV row delimiter
+          rowDelimiter: "\\n",
+          // Saving mode. 
+          //   - "metric" - save metrics to individual files
+          //   - "label" - save metrics by labels to individual files
+          mode: "metric",
+          // Saved metrics types.
+          types: null,
+          // Saving interval in seconds
+          interval: ${options.metrics.interval},
+          // Custom filename formatter
+          filenameFormatter: null,
+          // Custom CSV row formatter.
+          rowFormatter: null,
         }`
         }
       }
