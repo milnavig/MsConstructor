@@ -83,44 +83,56 @@ ${(function(){switch(options.broker.transporter) {
       - ./mosquitto:/mosquitto/config
     networks:
       - internal`
-  case 'AMPQ (0.9)':
+  case 'AMQP (0.9)':
     return `
   broker: 
     image: rabbitmq
     hostname: rabbitmq-server
     networks:
       - internal`
-  case 'AMPQ (1.0)':
+  case 'AMQP (1.0)':
     return `
   broker: 
-    image: isikh/rabbitmq_amqp1_0
-    hostname: rabbitmq-server
+    image: rmohr/activemq
+    hostname: activemq-server
+    environment:
+      - ACTIVEMQ_REMOVE_DEFAULT_ACCOUNT=true
+      - ACTIVEMQ_ADMIN_LOGIN=admin
+      - ACTIVEMQ_ADMIN_PASSWORD=admin
+      - ACTIVEMQ_STATIC_TOPICS=static-topic-1;static-topic-2
+      - ACTIVEMQ_STATIC_QUEUES=static-queue-1;static-queue-2
+      - ACTIVEMQ_ENABLED_SCHEDULER=true
+      - ACTIVEMQ_MIN_MEMORY=512
+      - ACTIVEMQ_MAX_MEMORY=2048
+    ports:
+      - '5672:5672'
     networks:
       - internal`
   case 'Kafka':
     return `
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.0.1
-    container_name: zookeeper
+    image: bitnami/zookeeper:latest
+    hostname: zookeeper
+    ports:
+      - '2181:2181'
     environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      - internal
 
   broker:
-    image: confluentinc/cp-kafka:7.0.1
-    container_name: broker
-    ports:
-      - "9092:9092"
-    depends_on:
-      - zookeeper
+    image: wurstmeister/kafka
+    restart: unless-stopped
+    ports: 
+      - '9092:9092'
+    hostname: kafka
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://broker:29092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1`
+      - KAFKA_ADVERTISED_HOST_NAME=kafka   
+      - KAFKA_ADVERTISED_PORT=9092
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_CREATE_TOPICS=test_topic:1:1
+    networks:
+      - internal`
   case 'NATS Streaming (STAN)':
     return `
   broker:
@@ -137,6 +149,8 @@ ${(function(){switch(options.serviceDiscovery.discoverer) {
   balancer:
     image: 'bitnami/etcd:latest'
     hostname: etcd-server
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
     networks:
       - internal`
   case 'Redis':

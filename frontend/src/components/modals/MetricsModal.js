@@ -9,7 +9,7 @@ import Select from '@mui/material/Select';
 import HelpIcon from '@mui/icons-material/Help';
 import Tooltip from '@mui/material/Tooltip';
 
-const METRICS = "Console";
+const METRICS = "Disabled";
 const INTERVAL = 5;
 
 export function MetricsModal({isOpen, toggle, moleculerOptions, setMoleculerOptions}) {
@@ -47,6 +47,7 @@ export function MetricsModal({isOpen, toggle, moleculerOptions, setMoleculerOpti
   };
 
   const metrics = [
+    "Disabled",
     "Console",
     "CSV",
   ];
@@ -89,7 +90,7 @@ export function MetricsModal({isOpen, toggle, moleculerOptions, setMoleculerOpti
           </div>
         </div>
         {
-          metricsData.metrics === METRICS ? 
+          metricsData.metrics === "Console" ? 
           <>
             <div>
               <FormControl sx={{ m: 1, width: 300 }}>
@@ -138,7 +139,7 @@ export function MetricsModal({isOpen, toggle, moleculerOptions, setMoleculerOpti
               </div>
             </div>
           </>
-          :
+          : metricsData.metrics === "CSV" ?
           <>
             <div>
               <FormControl disabled sx={{ m: 1, width: 300 }}>
@@ -198,7 +199,7 @@ export function MetricsModal({isOpen, toggle, moleculerOptions, setMoleculerOpti
                 </Tooltip>
               </div>
             </div>
-          </>
+          </> : null
         }
         
       </ModalBody>

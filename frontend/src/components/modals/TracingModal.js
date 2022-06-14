@@ -6,7 +6,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-const EXPORTER = "Console";
+const EXPORTER = "Disabled";
 
 export function TracingModal({isOpen, toggle, moleculerOptions, setMoleculerOptions}) {
   const [tracingData, setTracingData] = useState({
@@ -14,7 +14,7 @@ export function TracingModal({isOpen, toggle, moleculerOptions, setMoleculerOpti
     exporter: EXPORTER,
   });
 
-  const exporters = ["Console"];
+  const exporters = ["Disabled", "Console"];
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -31,7 +31,7 @@ export function TracingModal({isOpen, toggle, moleculerOptions, setMoleculerOpti
     const {
       target: { value },
     } = event;
-    setTracingData({...tracingData, exporter: value});
+    setTracingData({...tracingData, exporter: value, enable: value === "Disabled" ? false : true});
   };
 
   useEffect(() => {

@@ -30,7 +30,8 @@ module.exports = function generatePackage(options) {
     ${options.broker.transporter === "Redis" ? `"ioredis": "^5.0.6",` : 
     options.broker.transporter === "NATS" ? `"nats": "^2.7.1",` : 
     options.broker.transporter === "MQTT" ? `"mqtt": "^4.3.7",` : 
-    options.broker.transporter === "AMQP (0.9)" || options.broker.transporter === "AMQP (1.0)" ? `"amqplib": "^0.10.0",` : 
+    options.broker.transporter === "AMQP (0.9)" || options.broker.transporter === "AMQP (1.0)" ? `"amqplib": "^0.10.0",
+    "rhea-promise": "^2.1.0",` : 
     options.broker.transporter === "Kafka" ? `"kafka-node": "^5.0.0",` : 
     options.broker.transporter === "NATS Streaming (STAN)" ? `"node-nats-streaming": "^0.3.2",` : ""}
     ${options.broker.serializer === "Avro" ? `"avsc": "^5.7.4",` :

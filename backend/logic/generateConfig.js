@@ -14,8 +14,11 @@ module.exports = {
 
   transporter: "${options.broker.transporter === "Redis" ? "redis://redis-server:6379" : 
   options.broker.transporter === "MQTT" ? "mqtt://mqtt-server:1883" : 
-  options.broker.transporter === "AMPQ (1.0)" || options.broker.transporter === "AMPQ (0.9)" ? "amqp://rabbitmq-server:5672" :
-  options.broker.transporter === "NATS Streaming (STAN)" ? "stan://nats-streaming-server:4222" : options.broker.transporter}",
+  options.broker.transporter === "AMQP (0.9)" ? "amqp://rabbitmq-server:5672" :
+  options.broker.transporter === "AMQP (1.0)" ? "amqp10://admin:admin@activemq-server:5672" : 
+  options.broker.transporter === "NATS Streaming (STAN)" ? "stan://nats-streaming-server:4222" : 
+  options.broker.transporter === "NATS" ? "nats://nats.server:4222" : 
+  options.broker.transporter === "Kafka" ? "kafka://kafka:9092" : options.broker.transporter}",
 
   requestTimeout: 5000,
   retryPolicy: {
@@ -41,7 +44,7 @@ module.exports = {
 
   registry: {
     discoverer: {
-      type: "${options.serviceDiscovery.discoverer}",
+      type: "${options.serviceDiscovery.discoverer === "etcd3" ? "Etcd3" : options.serviceDiscovery.discoverer}",
       options: {
         ${options.serviceDiscovery.discoverer === "Redis" ? `
         redis: {
@@ -49,6 +52,9 @@ module.exports = {
           host: "redis-server",
           password: "redis",
           db: 1
+        },` : options.serviceDiscovery.discoverer === "etcd3" ? `
+        etcd: {
+          hosts: "etcd-server:2379",
         },` : ''}
         heartbeatInterval: ${options.serviceDiscovery.heartbeatInterval},
         heartbeatTimeout: ${options.serviceDiscovery.heartbeatTimeout},
@@ -98,7 +104,7 @@ module.exports = {
   errorRegenerator: null,
 
   metrics: {
-    enabled: true,
+    enabled: ${options.metrics.metrics === "Disabled" ? "false" : "true"},
     reporter: [
       {
 ${options.metrics.metrics === "Console" ? 
@@ -113,7 +119,7 @@ ${options.metrics.metrics === "Console" ?
           // Prints only changed metrics, not the full list.
           onlyChanges: ${options.metrics.onlyChanges}
         }`
-        :
+        : options.metrics.metrics === "CSV" ?
 `        type: "CSV",
         options: {
           // Folder of CSV files.
@@ -134,7 +140,7 @@ ${options.metrics.metrics === "Console" ?
           filenameFormatter: null,
           // Custom CSV row formatter.
           rowFormatter: null,
-        }`
+        }`: ''
         }
       }
     ]

@@ -390,6 +390,7 @@ export function BrokerModal({isOpen, toggle, moleculerOptions, setMoleculerOptio
                   transporter: transporterName, 
                   serializer: serializerName, 
                   circuitBraker: {
+                    enabled: circuitBrakerData.enabled,
                     threshold: circuitBrakerData.threshold,
                     minRequestCount: circuitBrakerData.minRequestCount,
                     windowTime: circuitBrakerData.windowTime,
