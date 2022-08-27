@@ -24,7 +24,6 @@ export function GatewayModal({isOpen, toggle, diagram, handleAddGateway, molecul
 
   const removeGatewayData = (i) => {
     gatewayData.splice(i, 1);
-    //delete gatewayData[i];
     setGatewayData(gatewayData);
     setEndpointsLength(--endpointsLength);
   }
@@ -88,24 +87,6 @@ export function GatewayModal({isOpen, toggle, diagram, handleAddGateway, molecul
                 />
               </FormControl>
             </div>
-            <div>
-              <FormControl sx={{ m: 1, width: 300 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox checked={authorization} onChange={(e) => setAuthorization(!authorization)} name="authorization" />
-                }
-                label="Aвторизація"
-              />
-              </FormControl>
-              <FormControl sx={{ m: 1, width: 300 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox checked={authentication} onChange={(e) => setAuthentication(!authentication)} name="authentification" />
-                }
-                label="Автентифікація"
-              />
-              </FormControl>
-            </div>
           </div>)
         }
         <Button
@@ -119,6 +100,24 @@ export function GatewayModal({isOpen, toggle, diagram, handleAddGateway, molecul
         >
           Додати
         </Button>
+        <div>
+          <FormControl sx={{ m: 1, width: 300 }}>
+          <FormControlLabel
+            control={
+              <Checkbox checked={authorization} onChange={(e) => setAuthorization(!authorization)} name="authorization" />
+            }
+            label="Aвторизація"
+          />
+          </FormControl>
+          <FormControl sx={{ m: 1, width: 300 }}>
+          <FormControlLabel
+            control={
+              <Checkbox checked={authentication} onChange={(e) => setAuthentication(!authentication)} name="authentification" />
+            }
+            label="Автентифікація"
+          />
+          </FormControl>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button

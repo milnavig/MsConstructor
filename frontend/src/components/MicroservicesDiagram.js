@@ -88,8 +88,6 @@ export function MicroservicesDiagram({
       if (node !== null) {
         diagram.current.startTransaction("");
         node.data = {...node.data, url: ep.url, http_method: ep.http_method};
-        //node.data.http_method = ep.http_method;
-        //node.data.url = ep.url;
         diagram.current.commitTransaction("");
       } else {
         diagram.current.model.addNodeData(ep);

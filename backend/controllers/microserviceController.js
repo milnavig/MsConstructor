@@ -45,14 +45,16 @@ class MicroserviceController {
 	
     let transporter = "TRANSPORTER=nats://nats:4222\n";
     if (model.options.broker.transporter === "Redis") transporter = "TRANSPORTER=redis://redis-server:6379\n";
-    if (model.options.broker.transporter === "MQTT") transporter = "TRANSPORTER=mqtt://mqtt-server:1883\n";
-    if (model.options.broker.transporter === "AMQP (0.9)") transporter = "TRANSPORTER=amqp://rabbitmq-server:5672\n";
-    if (model.options.broker.transporter === "AMQP (1.0)") transporter = "TRANSPORTER=amqp10://admin:admin@activemq-server:5672\n";
-    if (model.options.broker.transporter === "NATS Streaming (STAN)") transporter = "TRANSPORTER=stan://nats-streaming-server:4222\n";
-    if (model.options.broker.transporter === "Kafka") transporter = "TRANSPORTER=kafka://kafka:9092\n";
+    else if (model.options.broker.transporter === "MQTT") transporter = "TRANSPORTER=mqtt://mqtt-server:1883\n";
+    else if (model.options.broker.transporter === "AMQP (0.9)") transporter = "TRANSPORTER=amqp://rabbitmq-server:5672\n";
+    else if (model.options.broker.transporter === "AMQP (1.0)") transporter = "TRANSPORTER=amqp10://admin:admin@activemq-server:5672\n";
+    else if (model.options.broker.transporter === "NATS Streaming (STAN)") transporter = "TRANSPORTER=stan://nats-streaming-server:4222\n";
+    else if (model.options.broker.transporter === "Kafka") transporter = "TRANSPORTER=kafka://kafka:9092\n";
+
     let balancer = '\n';
     if (model.options.serviceDiscovery.discoverer === "Redis") balancer = "BALANCER=redis://redis-server:6379\n";
-    if (model.options.serviceDiscovery.discoverer === "etcd3") balancer = "BALANCER=etcd3://etcd-server:2379\n";
+    else if (model.options.serviceDiscovery.discoverer === "etcd3") balancer = "BALANCER=etcd3://etcd-server:2379\n";
+
 	  const envData = "SERVICEDIR=services\n" +
       transporter +
       balancer +
@@ -129,7 +131,7 @@ function generateGateways(appName, model) {
     d.microservice = endpoints.toPort.replace('_in', '');
     d.method = endpoints.to;
   });
-  //console.log(gatewayData);
+
   const gtw = generateGateway(gatewayData, model.options.authorization, model.options.authentification);
 
   fs.writeFileSync(`./output/${appName}/services/api.service.js`, gtw);
@@ -177,7 +179,6 @@ function generateServices(appName, model) {
   }
   
   const microservicesData = JSON.parse(model.main);
-  //console.log(microservicesData);
 
   let microservices = microservicesData.nodeDataArray.filter(node => node.type === "microservice");
 

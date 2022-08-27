@@ -100,7 +100,7 @@ module.exports = {
   cacher: "MemoryLRU",
   serializer: "${options.broker.serializer}",
 
-  validator: true,
+  validator: false,
   errorRegenerator: null,
 
   metrics: {

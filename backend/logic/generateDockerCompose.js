@@ -15,7 +15,7 @@ ${ isGateway ?
     depends_on:
       - broker
     ports:
-      - 5000:3000
+      - 5001:3000
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api-gw.rule=PathPrefix(${`/`})"

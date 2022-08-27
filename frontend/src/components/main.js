@@ -195,18 +195,8 @@ export function MainComponent() {
             setNodes({...nodes, [k]: data.nodeDataArray});
             setLinks({...links, [k]: data.linkDataArray});
             const main_diagram = diagrams.get('main');
-            //main_diagram.clear();
-            //main_diagram.currentTool.doCancel();
-            //main_diagram.model = data;
-
-            //main_diagram.startTransaction("modify nodeDataArray and linkDataArray");
-            //main_diagram.model.nodeDataArray = data.nodeDataArray;
-            //main_diagram.model.linkDataArray = data.linkDataArray;
-            //main_diagram.commitTransaction("modify nodeDataArray and linkDataArray");
 
             main_diagram.startTransaction("modify nodeDataArray and linkDataArray");
-            //main_diagram.clear();
-            //main_diagram.currentTool.doCancel();
             main_diagram.model.mergeNodeDataArray(data.nodeDataArray);
             main_diagram.model.mergeLinkDataArray(data.linkDataArray);
             main_diagram.commitTransaction("modify nodeDataArray and linkDataArray");

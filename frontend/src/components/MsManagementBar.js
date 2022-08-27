@@ -244,9 +244,6 @@ export function MsManagementBar({
                   <label className="form-check-label" htmlFor={`name_${i}`} style={{paddingRight: "5px"}}>
                     Тип аргументу:
                   </label>
-                  {/* <Input id={`name_${i}`} value={methodInfo[`prop_${i}`]?.name} type="text" name={`prop_${i}`} onInput={e => setMethodInfo(
-                    {...methodInfo, props: changeProps(methodInfo.props, `prop_${i}`, { type: e.target.value })}
-                  )} placeholder="Введіть тип аргументу..." /> */}
                   <Select
                     id={`name_${i}`}
                     value={methodInfo.props.find(p => p.id === `prop_${i}`)?.type ?? "any"}

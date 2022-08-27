@@ -20,8 +20,7 @@ export const dbModel = (go, {
         background: "transparent",  // so this port's background can be picked by the mouse
         fromSpot: go.Spot.Right,  // links only go from the right side to the left side
         toSpot: go.Spot.Left,
-        // allow drawing links from or to this port:
-        //fromLinkable: true, toLinkable: true
+        // fromLinkable: true, toLinkable: true
       },
       new go.Binding("fromLinkable", "type", (type) => (type === 'pk' || type === 'fk') ? true : true),
       new go.Binding("toLinkable", "type", (type) => (type === 'pk' || type === 'fk') ? true : true),
@@ -158,8 +157,6 @@ export const dbModel = (go, {
     );
 
   const checkField = (linkData) => {
-    //nodes[modelName].find((node) => node.key === linkData.from && node.fields)
-
     // all model changes should happen in a transaction
     diagram.commit(function(d) {
       const node_from = diagram.model.nodeDataArray.find((node) => node.key === linkData.from);
