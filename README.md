@@ -1,4 +1,5 @@
 # About the microservices toolkit
+The toolkit for designing the structure of microservice problem-oriented software.
 The implemented toolkit has the following capabilities:
 1) Creation of a microservice application project from scratch;
 2) Downloading and editing the existing scheme of the microservice application, downloaded in JSON format;
