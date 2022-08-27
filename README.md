@@ -8,6 +8,9 @@ The implemented toolkit has the following capabilities:
 6) Deploying the microservice application in containers using Docker and Docker-compose.
 
 # Screenshots
+![Main page](https://raw.githubusercontent.com/milnavig/diplom/main/screenshots/1.png)
+![MS designing page](https://raw.githubusercontent.com/milnavig/diplom/main/screenshots/2.png)
+![DB designing page](https://raw.githubusercontent.com/milnavig/diplom/main/screenshots/3.png)
 
 # How to launch
 Backend
